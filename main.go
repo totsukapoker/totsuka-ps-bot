@@ -39,20 +39,28 @@ func main() {
 		)
 		if err != nil {
 			fmt.Println("ERROR linebot.New:", err)
+			c.AbortWithStatus(500)
 			return
 		}
 
 		events, err := bot.ParseRequest(c.Request)
 		if err != nil {
 			fmt.Println("ERROR ParseRequest:", err)
+			if err == linebot.ErrInvalidSignature {
+				c.AbortWithStatus(400)
+			} else {
+				c.AbortWithStatus(500)
+			}
 			return
 		}
+
 		for _, event := range events {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
 						fmt.Println("ERROR ReplyMessage:", err)
+						c.AbortWithStatus(500)
 					}
 				}
 			}
