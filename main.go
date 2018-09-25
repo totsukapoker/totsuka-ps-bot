@@ -62,7 +62,12 @@ func main() {
 			case linebot.EventTypeMessage:
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+					profile, err := bot.GetProfile(event.Source.UserID).Do()
+					if err != nil {
+						fmt.Println("ERROR TypeMessage(Text) GetProfile:", err)
+						c.AbortWithStatus(400)
+					}
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(profile.DisplayName+"さんこんにちは！\n"+message.Text)).Do(); err != nil {
 						fmt.Println("ERROR TypeMessage(Text) ReplyMessage:", err)
 						c.AbortWithStatus(500)
 					}
