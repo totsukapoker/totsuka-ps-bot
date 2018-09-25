@@ -1,0 +1,1 @@
+web: totsuka-ps-bot

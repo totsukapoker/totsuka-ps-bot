@@ -1,0 +1,12 @@
+{
+  "name": "Totsuka PS Bot",
+  "description": "Bot for Totsuka Poker School",
+  "keywords": [
+    "totsuka",
+    "go",
+    "poker",
+    "totsukaps"
+  ],
+  "website": "https://github.com/yakkun/totsuka-ps-bot",
+  "repository": "https://github.com/yakkun/totsuka-ps-bot"
+}
