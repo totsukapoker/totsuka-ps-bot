@@ -55,14 +55,27 @@ func main() {
 		}
 
 		for _, event := range events {
-			if event.Type == linebot.EventTypeMessage {
+			// Support types: EventTypeMessage, EventTypeFollow, EventTypeUnfollow, EventTypePostback
+			// Unsupport types: EventTypeJoin, EventTypeLeave, EventTypeBeacon
+			// -> do nothing (ignore it)
+			switch event.Type {
+			case linebot.EventTypeMessage:
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
-						fmt.Println("ERROR ReplyMessage:", err)
+						fmt.Println("ERROR TypeMessage(Text) ReplyMessage:", err)
 						c.AbortWithStatus(500)
 					}
 				}
+			case linebot.EventTypeFollow:
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("『怪物と闘う者は、その過程で自らが怪物と化さぬよう心せよ。おまえが長く深淵を覗くならば、深淵もまた等しくおまえを見返すのだ』")).Do(); err != nil {
+					fmt.Println("ERROR TypeFollow ReplyMessage:", err)
+					c.AbortWithStatus(500)
+				}
+			case linebot.EventTypeUnfollow:
+				// do something
+			case linebot.EventTypePostback:
+				// do something
 			}
 		}
 	})
