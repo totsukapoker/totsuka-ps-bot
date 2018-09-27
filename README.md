@@ -4,6 +4,8 @@
 
 Heroku: https://totsuka-ps-bot.herokuapp.com/
 
+![LINEアカウントQRコード](/static/qrcode.png)
+
 ## Misc
 
 - [heroku/go-getting-started](https://github.com/heroku/go-getting-started) をベースに開発
