@@ -9,4 +9,5 @@ type User struct {
 	DisplayName   string
 	PictureURL    string
 	StatusMessage string
+	Transactions  []Transaction
 }
