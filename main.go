@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -85,12 +86,23 @@ func main() {
 			// -> do nothing (ignore it)
 			switch event.Type {
 			case linebot.EventTypeMessage:
+				replyMessage := ""
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					if _, err = bot.ReplyMessage(
-						event.ReplyToken,
-						linebot.NewTextMessage(user.DisplayName+"さんこんにちは！\n"+message.Text),
-					).Do(); err != nil {
+					m := normalizeMessage(message.Text)
+					switch {
+					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
+						replyMessage = "バイインの入力をしました"
+					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
+						replyMessage = "現在額の入力をしました"
+					default:
+						replyMessage = usageMessage()
+					}
+				default:
+					replyMessage = usageMessage()
+				}
+				if replyMessage != "" {
+					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMessage)).Do(); err != nil {
 						fmt.Println("ERROR TypeMessage(Text) ReplyMessage:", err)
 						c.AbortWithStatus(500)
 					}
@@ -114,4 +126,17 @@ func main() {
 	})
 
 	router.Run(":" + port)
+}
+
+func usageMessage() string {
+	return "使い方:\n・現在の持ち点をそのまま入力(例:12340)\n・バイインで増やした点を入力(例:+5000)"
+}
+
+func normalizeMessage(m string) (msg string) {
+	msg = m
+	return
+}
+
+func checkRegexp(reg, str string) bool {
+	return regexp.MustCompile(reg).Match([]byte(str))
 }
