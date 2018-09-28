@@ -99,7 +99,7 @@ func main() {
 				if _, err = bot.ReplyMessage(
 					event.ReplyToken,
 					linebot.NewTextMessage(
-						"『怪物と闘う者は、その過程で自らが怪物と化さぬよう心せよ。"+user.DisplayName+"が長く深淵を覗くならば、深淵もまた等しく"+user.DisplayName+"を見返すのだ』"
+						"『怪物と闘う者は、その過程で自らが怪物と化さぬよう心せよ。"+user.DisplayName+"が長く深淵を覗くならば、深淵もまた等しく"+user.DisplayName+"を見返すのだ』",
 					),
 				).Do(); err != nil {
 					fmt.Println("ERROR TypeFollow ReplyMessage:", err)
