@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -92,6 +93,10 @@ func main() {
 					m := normalizeMessage(message.Text)
 					switch {
 					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
+						m, _ := strconv.Atoi(m)
+						transaction := Transaction{UserID: user.ID, Amount: m}
+						db.NewRecord(transaction)
+						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
 						replyMessage = "現在額の入力をしました"
