@@ -21,6 +21,12 @@
 			"revision": "4cc2de6207f4128624cbdd16be30f64966c67c08"
 		},
 		{
+			"checksumSHA1": "k9izYoyobR8Upb3Yjsw9htgE/Mk=",
+			"path": "github.com/go-sql-driver/mysql",
+			"revision": "99ff426eb706cffe92ff3d058e168b278cabf7c7",
+			"revisionTime": "2018-07-19T07:19:42Z"
+		},
+		{
 			"checksumSHA1": "MFkrEy77SoBbEtLd3Ros+NZO35w=",
 			"path": "github.com/heroku/x/hmetrics",
 			"revision": "705849e307dd75c91728463dea5bfd08ef493e64",
@@ -31,6 +37,24 @@
 			"path": "github.com/heroku/x/hmetrics/onload",
 			"revision": "705849e307dd75c91728463dea5bfd08ef493e64",
 			"revisionTime": "2017-10-04T17:02:40Z"
+		},
+		{
+			"checksumSHA1": "saZ4MPgLuld/osSp8/tzrDYIXrY=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "f6260a00852946a10a57e8bb9f505f19bc9389b7",
+			"revisionTime": "2018-09-22T11:59:11Z"
+		},
+		{
+			"checksumSHA1": "eECxSkwh0WmhLwaxHfkvcLOWS08=",
+			"path": "github.com/jinzhu/gorm/dialects/mysql",
+			"revision": "f6260a00852946a10a57e8bb9f505f19bc9389b7",
+			"revisionTime": "2018-09-22T11:59:11Z"
+		},
+		{
+			"checksumSHA1": "4eelJOSLZoDzLuaJvgilOBVNovU=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "04140366298a54a039076d798123ffa108fff46c",
+			"revisionTime": "2018-03-08T03:36:59Z"
 		},
 		{
 			"checksumSHA1": "L+b8rXd/ZpkaTeEcXsqhh3pCZyE=",
