@@ -5,6 +5,6 @@ import "github.com/jinzhu/gorm"
 // Transaction model
 type Transaction struct {
 	gorm.Model
-	UserID uint
-	Amount int `gorm:"NOT NULL"`
+	UserID uint `gorm:"NOT NULL"`
+	Amount int  `gorm:"NOT NULL"`
 }
