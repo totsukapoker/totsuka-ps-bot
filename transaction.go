@@ -6,5 +6,5 @@ import "github.com/jinzhu/gorm"
 type Transaction struct {
 	gorm.Model
 	UserID uint
-	amount int
+	Amount int `gorm:"NOT NULL"`
 }
