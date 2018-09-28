@@ -24,6 +24,7 @@ func ConnectDB() (db *gorm.DB) {
 // MigrateDB - Do migration database with gorm.DB
 func MigrateDB(db *gorm.DB) {
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Transaction{})
 }
 
 func connectionVars() (driver string, source string) {
