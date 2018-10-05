@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"github.com/yakkun/totsuka-ps-bot/models"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 
@@ -72,7 +73,7 @@ func main() {
 
 		for _, event := range events {
 			// User loading
-			user := User{}
+			user := models.User{}
 			if event.Source.UserID != "" {
 				profile, err := bot.GetProfile(event.Source.UserID).Do()
 				if err != nil {
@@ -80,7 +81,7 @@ func main() {
 					c.AbortWithStatus(400)
 					return
 				}
-				db.Where(User{UserID: event.Source.UserID}).Assign(User{DisplayName: profile.DisplayName, PictureURL: profile.PictureURL, StatusMessage: profile.StatusMessage}).FirstOrCreate(&user)
+				db.Where(models.User{UserID: event.Source.UserID}).Assign(models.User{DisplayName: profile.DisplayName, PictureURL: profile.PictureURL, StatusMessage: profile.StatusMessage}).FirstOrCreate(&user)
 			}
 
 			if user.ID == 0 {
@@ -90,7 +91,7 @@ func main() {
 			}
 
 			// Game loading
-			game := Game{}
+			game := models.Game{}
 			db.Where("NOW() BETWEEN started_at AND ended_at").First(&game)
 			if game.ID == 0 {
 				fmt.Println("ERROR Game is not exist")
@@ -110,7 +111,7 @@ func main() {
 					switch {
 					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
 						m, _ := strconv.Atoi(m)
-						transaction := Transaction{UserID: user.ID, GameID: game.ID, Amount: m, IsBuyin: true}
+						transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m, IsBuyin: true}
 						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
@@ -120,7 +121,7 @@ func main() {
 						}
 						var result Result
 						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&result)
-						transaction := Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
+						transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
 						db.Create(&transaction)
 						replyMessage = "現在額の入力をしました"
 					default:

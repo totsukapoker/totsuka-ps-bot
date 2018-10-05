@@ -9,6 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/yakkun/totsuka-ps-bot/models"
 )
 
 // ConnectDB - Provide connection to database with gorm
@@ -24,9 +25,9 @@ func ConnectDB() (db *gorm.DB) {
 
 // MigrateDB - Do migration database with gorm.DB
 func MigrateDB(db *gorm.DB) {
-	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Game{})
-	db.AutoMigrate(&Transaction{})
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Game{})
+	db.AutoMigrate(&models.Transaction{})
 }
 
 func connectionVars() (driver string, source string) {
