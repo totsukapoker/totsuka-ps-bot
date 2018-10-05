@@ -6,6 +6,7 @@ import "github.com/jinzhu/gorm"
 type Transaction struct {
 	gorm.Model
 	UserID  uint
+	GameID  uint
 	Amount  int  `gorm:"not null"`
 	IsBuyin bool `gorm:"not null;default:0"`
 }

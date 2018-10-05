@@ -89,6 +89,15 @@ func main() {
 				return
 			}
 
+			// Game loading
+			game := Game{}
+			db.Where("NOW() BETWEEN started_at AND ended_at").First(&game)
+			if game.ID == 0 {
+				fmt.Println("ERROR Game is not exist")
+				c.AbortWithStatus(500)
+				return
+			}
+
 			// Support types: EventTypeMessage, EventTypeFollow, EventTypeUnfollow, EventTypePostback
 			// Unsupport types: EventTypeJoin, EventTypeLeave, EventTypeBeacon
 			// -> do nothing (ignore it)
@@ -101,7 +110,7 @@ func main() {
 					switch {
 					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
 						m, _ := strconv.Atoi(m)
-						transaction := Transaction{UserID: user.ID, Amount: m, IsBuyin: true}
+						transaction := Transaction{UserID: user.ID, GameID: game.ID, Amount: m, IsBuyin: true}
 						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
@@ -110,8 +119,8 @@ func main() {
 							Total int
 						}
 						var result Result
-						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ?", user.ID).Scan(&result)
-						transaction := Transaction{UserID: user.ID, Amount: m - result.Total, IsBuyin: false}
+						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&result)
+						transaction := Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
 						db.Create(&transaction)
 						replyMessage = "現在額の入力をしました"
 					default:
