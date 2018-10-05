@@ -95,7 +95,6 @@ func main() {
 					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
 						m, _ := strconv.Atoi(m)
 						transaction := Transaction{UserID: user.ID, Amount: m}
-						db.NewRecord(transaction)
 						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
