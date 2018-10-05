@@ -98,6 +98,14 @@ func main() {
 						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
+						m, _ := strconv.Atoi(m)
+						type Result struct {
+							Total int
+						}
+						var result Result
+						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ?", user.ID).Scan(&result)
+						transaction := Transaction{UserID: user.ID, Amount: m - result.Total}
+						db.Create(&transaction)
 						replyMessage = "現在額の入力をしました"
 					default:
 						replyMessage = usageMessage()
