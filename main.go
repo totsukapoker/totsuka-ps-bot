@@ -101,7 +101,7 @@ func main() {
 					switch {
 					case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
 						m, _ := strconv.Atoi(m)
-						transaction := Transaction{UserID: user.ID, Amount: m}
+						transaction := Transaction{UserID: user.ID, Amount: m, IsBuyin: true}
 						db.Create(&transaction)
 						replyMessage = "バイインの入力をしました"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
@@ -111,7 +111,7 @@ func main() {
 						}
 						var result Result
 						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ?", user.ID).Scan(&result)
-						transaction := Transaction{UserID: user.ID, Amount: m - result.Total}
+						transaction := Transaction{UserID: user.ID, Amount: m - result.Total, IsBuyin: false}
 						db.Create(&transaction)
 						replyMessage = "現在額の入力をしました"
 					default:
