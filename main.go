@@ -82,6 +82,11 @@ func main() {
 				db.Where(User{UserID: event.Source.UserID}).Assign(User{DisplayName: profile.DisplayName, PictureURL: profile.PictureURL, StatusMessage: profile.StatusMessage}).FirstOrCreate(&user)
 			}
 
+			if user.ID == 0 {
+				fmt.Println("ERROR User is not specified, event.Source.UserID:", event.Source.UserID)
+				c.AbortWithStatus(400)
+			}
+
 			// Support types: EventTypeMessage, EventTypeFollow, EventTypeUnfollow, EventTypePostback
 			// Unsupport types: EventTypeJoin, EventTypeLeave, EventTypeBeacon
 			// -> do nothing (ignore it)
