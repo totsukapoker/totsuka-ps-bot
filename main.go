@@ -78,6 +78,7 @@ func main() {
 				if err != nil {
 					fmt.Println("ERROR GetProfile:", err, "UserID:", event.Source.UserID)
 					c.AbortWithStatus(400)
+					return
 				}
 				db.Where(User{UserID: event.Source.UserID}).Assign(User{DisplayName: profile.DisplayName, PictureURL: profile.PictureURL, StatusMessage: profile.StatusMessage}).FirstOrCreate(&user)
 			}
@@ -85,6 +86,7 @@ func main() {
 			if user.ID == 0 {
 				fmt.Println("ERROR User is not specified, event.Source.UserID:", event.Source.UserID)
 				c.AbortWithStatus(400)
+				return
 			}
 
 			// Support types: EventTypeMessage, EventTypeFollow, EventTypeUnfollow, EventTypePostback
@@ -122,6 +124,7 @@ func main() {
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMessage)).Do(); err != nil {
 						fmt.Println("ERROR TypeMessage(Text) ReplyMessage:", err)
 						c.AbortWithStatus(500)
+						return
 					}
 				}
 			case linebot.EventTypeFollow:
@@ -133,6 +136,7 @@ func main() {
 				).Do(); err != nil {
 					fmt.Println("ERROR TypeFollow ReplyMessage:", err)
 					c.AbortWithStatus(500)
+					return
 				}
 			case linebot.EventTypeUnfollow:
 				// do something
