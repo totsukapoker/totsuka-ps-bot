@@ -18,6 +18,7 @@ func ConnectDB() (db *gorm.DB) {
 		log.Fatal("Failed to connect database")
 	}
 	db.LogMode(true)
+	db.DB().SetMaxIdleConns(0) // To avoid an error "Invalid Connection" on Heroku
 	return
 }
 
