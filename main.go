@@ -8,6 +8,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -92,7 +93,7 @@ func main() {
 
 			// Game loading
 			game := models.Game{}
-			db.Where("NOW() BETWEEN started_at AND ended_at").First(&game)
+			db.Where("? BETWEEN started_at AND ended_at", time.Now()).First(&game)
 			if game.ID == 0 {
 				fmt.Println("ERROR Game is not exist")
 				if _, err = bot.ReplyMessage(

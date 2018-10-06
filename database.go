@@ -44,7 +44,7 @@ func connectionVars() (driver string, source string) {
 		driver = match[1]
 		if driver == "mysql" {
 			source = fmt.Sprintf(
-				"%s:%s@tcp(%s:3306)/%s?parseTime=true&charset=utf8",
+				"%s:%s@tcp(%s:3306)/%s?charset=utf8&parseTime=true&loc=Asia%%2FTokyo",
 				match[2],
 				match[3],
 				match[4],
