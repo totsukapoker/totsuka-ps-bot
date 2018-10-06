@@ -95,7 +95,15 @@ func main() {
 			db.Where("NOW() BETWEEN started_at AND ended_at").First(&game)
 			if game.ID == 0 {
 				fmt.Println("ERROR Game is not exist")
-				c.AbortWithStatus(500)
+				if _, err = bot.ReplyMessage(
+					event.ReplyToken,
+					linebot.NewTextMessage(
+						"現在開催されているゲームがないので利用できません。",
+					),
+				).Do(); err != nil {
+					fmt.Println("ERROR Game-is-not-exist ReplyMessage:", err)
+					c.AbortWithStatus(500)
+				}
 				return
 			}
 
