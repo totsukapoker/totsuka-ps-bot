@@ -1,0 +1,14 @@
+<html>
+  {{template "header.tmpl.html"}}
+<body>
+  <h1>Game: {{.game.Name}}</h1>
+  <h2>{{.game.StartedAt}}〜{{.game.EndedAt}}</h2>
+  <h3>Log</h3>
+  <ul>
+    {{range .game.Transactions}}
+    <li>{{.Amount}} / IsBuyin? {{if .IsBuyin}}yes{{else}}no{{end}}</li>
+    {{end}}
+  </ul>
+  {{template "footer_js.tmpl.html"}}
+</body>
+</html>

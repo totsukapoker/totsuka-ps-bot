@@ -164,6 +164,29 @@ func main() {
 		}
 	})
 
+	// GET: /result/:id
+	// ゲーム(id=game_id)の現在の状況及び結果を表示する
+	router.GET("/result/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			showErrorHTML(c, 500, "strconv error")
+			return
+		}
+		if id <= 0 {
+			showErrorHTML(c, 400, "Need id")
+			return
+		}
+		game := models.Game{}
+		db.First(&game, id)
+		if game.ID == 0 {
+			showErrorHTML(c, 404, "Not found")
+			return
+		}
+		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
+			"game": game,
+		})
+	})
+
 	router.Run(":" + port)
 }
 
