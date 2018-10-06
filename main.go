@@ -179,3 +179,10 @@ func normalizeMessage(m string) (msg string) {
 func checkRegexp(reg, str string) bool {
 	return regexp.MustCompile(reg).Match([]byte(str))
 }
+
+func showErrorHTML(c *gin.Context, code int, message string) {
+	c.HTML(code, "error.tmpl.html", gin.H{
+		"code":    code,
+		"message": message,
+	})
+}
