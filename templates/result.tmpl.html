@@ -30,6 +30,14 @@
         <td>{{.UpdatedAt}}</td>
       </tr>
       {{end}}
+      {{if gt .totalstat.CurrentAmount 0}}
+      <tr>
+        <td>&nbsp;</td>
+        <td>{{.totalstat.CurrentAmount}}</td>
+        <td>{{.totalstat.BuyinAmount}}</td>
+        <td colspan="2">{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}→OK！{{else}}→差異があります{{end}}</td>
+      </tr>
+      {{end}}
     </tbody>
   </table>
 

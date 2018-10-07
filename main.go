@@ -91,7 +91,12 @@ func main() {
 			CreatedAt     time.Time
 			UpdatedAt     time.Time
 		}
+		type TotalStat struct {
+			CurrentAmount int
+			BuyinAmount   int
+		}
 		var stats []Stat
+		var totalstat TotalStat
 		for _, u := range users {
 			var s Stat
 			s.User = u
@@ -114,6 +119,8 @@ func main() {
 			}
 		}
 		for i, s := range stats {
+			totalstat.CurrentAmount += s.CurrentAmount
+			totalstat.BuyinAmount += s.BuyinAmount
 			if s.BuyinAmount > 0 {
 				stats[i].ROI = fmt.Sprintf("%.f%%", float64(s.CurrentAmount)/float64(s.BuyinAmount)*100)
 			}
@@ -147,6 +154,7 @@ func main() {
 			"currentTime": time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("15:04:05"),
 			"game":        game,
 			"stats":       stats,
+			"totalstat":   totalstat,
 			"logs":        logs,
 		})
 	})
