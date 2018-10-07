@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   {{template "header.tmpl.html"}}
 </head>
 <body>
-  <h1>Totsuka Poker School Bot</h1>
-  <img src="/static/qrcode.png" width="132" height="132" alt="QR Code to register">
-  {{template "line_add_friends_button.tmpl.html"}}
+<div class="container-fluid">
+  <div class="jumbotron">
+      <h1 class="display-4">TOTSUKA PS BOT</h1>
+      <p class="lead"><a href="https://totsukapoker.com">戸塚ポーカースクール</a>で独自開発し、利用している点数管理システムです。個人がそれぞれで点数管理ができ、かつ全員にそれが同時に共有される事で公平性を担保します。</p>
+      <hr class="my-4">
+      <p>参加者であれば誰でも利用できます。下記QRコード、もしくはボタンからLINE Botを友達登録して始めて下さい。</p>
+      <p><img src="/static/qrcode.png" width="132" height="132" alt="QR Code to register"></p>
+      <p>{{template "line_add_friends_button.tmpl.html"}}</p>
+  </div>
   {{template "footer_js.tmpl.html"}}
+</div>
 </body>
 </html>
