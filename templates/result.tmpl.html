@@ -1,53 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   {{template "header.tmpl.html"}}
+  <link rel="stylesheet" type="text/css" href="/static/result.css" />
 </head>
 <body>
-  <h1>Game: {{.game.Name}}</h1>
-  <p>{{.game.StartedAt}}〜{{.game.EndedAt}}</p>
-
-  <table id="stats">
-    <caption>
-      <strong>現在状況 ({{.currentTime}}現在)</strong>
-    </caption>
-    <thead>
+<div class="container-fluid">
+  <h1>{{.game.Name}}</h1>
+  <p>{{.game.StartedAt.Format "2006/1/2 15:04"}}〜{{.game.EndedAt.Format "2006/1/2 15:04"}}</p>
+  <p class="text-info">{{.currentTime.Format "15:04:05"}}時点</p>
+  <table id="stats" class="table table-striped table-bordered">
+    <thead class="thead-light">
       <tr>
-        <td>名前</td>
-        <td>持ち点</td>
-        <td>バイイン</td>
-        <td>ROI</td>
-        <td>最終更新</td>
+        <th>名前</th>
+        <th>現在額</th>
+        <th>バイイン</th>
+        <th>ROI</th>
+        <th>最終更新</th>
       </tr>
     </thead>
     <tbody>
       {{range .stats}}
       <tr>
         <td><img src="{{.User.PictureURL}}" width="30" height="30">{{.User.DisplayName}}</td>
-        <td>{{.CurrentAmount}}</td>
-        <td>{{.BuyinAmount}}</td>
-        <td>{{.ROI}}%</td>
-        <td>{{.UpdatedAt}}</td>
+        <td class="text-right">{{.CurrentAmount}}</td>
+        <td class="text-right">{{.BuyinAmount}}</td>
+        <td class="text-right {{if gt .ROI 100.0}}table-success{{end}}">
+          {{printf "%.f" .ROI}}%
+        </td>
+        <td>{{.UpdatedAt.Format "1/2 15:04"}}</td>
       </tr>
       {{end}}
       {{if gt .totalstat.CurrentAmount 0}}
-      <tr>
+      <tr class="table-{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}success{{else}}danger{{end}}">
         <td>&nbsp;</td>
-        <td>{{.totalstat.CurrentAmount}}</td>
-        <td>{{.totalstat.BuyinAmount}}</td>
-        <td colspan="2">{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}→OK！{{else}}→差異があります{{end}}</td>
+        <td class="text-right">{{.totalstat.CurrentAmount}}</td>
+        <td class="text-right">{{.totalstat.BuyinAmount}}</td>
+        <td colspan="2">
+          →{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}OK！{{else}}差異があります{{end}}
+        </td>
       </tr>
       {{end}}
     </tbody>
   </table>
 
-  <ul id="logs">
-    {{range .logs}}
-    <li>{{.User.DisplayName}} {{if .IsBuyin}}+{{end}}{{.Amount}} ({{.CreatedAt}})</li>
-    {{end}}
-  </ul>
+  <div class="table-responsive">
+    <table id="logs" class="table table-dark table-borderless table-sm">
+      <thead>
+        <tr>
+          <th>名前</th>
+          <th>タイプ</th>
+          <th>金額</th>
+          <th>日時</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .logs}}
+        <tr>
+          <td>{{.User.DisplayName}}</td>
+          <td>{{if .IsBuyin}}バイイン{{else}}現在額{{end}}</td>
+          <td class="text-right">{{if gt .Amount 0}}+{{end}}{{.Amount}}</td>
+          <td>{{.CreatedAt}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
 
   {{template "footer_js.tmpl.html"}}
   <script src="/static/result.js"></script>
+</div>
+<div class="qrcode fixed-top">
+  <img src="/static/qrcode.png" width="120" height="120">
+</div>
 </body>
 </html>

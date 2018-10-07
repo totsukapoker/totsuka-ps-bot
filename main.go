@@ -150,7 +150,7 @@ func main() {
 		}
 
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-			"currentTime": time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("15:04:05"),
+			"currentTime": time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)),
 			"game":        game,
 			"stats":       stats,
 			"totalstat":   totalstat,
