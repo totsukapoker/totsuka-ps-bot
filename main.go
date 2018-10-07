@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -87,7 +86,7 @@ func main() {
 			User          models.User
 			CurrentAmount int
 			BuyinAmount   int
-			ROI           string
+			ROI           float64
 			CreatedAt     time.Time
 			UpdatedAt     time.Time
 		}
@@ -122,7 +121,7 @@ func main() {
 			totalstat.CurrentAmount += s.CurrentAmount
 			totalstat.BuyinAmount += s.BuyinAmount
 			if s.BuyinAmount > 0 {
-				stats[i].ROI = fmt.Sprintf("%.f%%", float64(s.CurrentAmount)/float64(s.BuyinAmount)*100)
+				stats[i].ROI = float64(s.CurrentAmount) / float64(s.BuyinAmount) * 100
 			}
 		}
 
