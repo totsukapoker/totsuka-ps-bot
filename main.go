@@ -54,7 +54,7 @@ func main() {
 			return
 		}
 		if id <= 0 {
-			showErrorHTML(c, http.StatusBadRequest, "Need id")
+			showErrorHTML(c, http.StatusBadRequest, "Need valid id")
 			return
 		}
 		game := models.Game{}
@@ -75,7 +75,7 @@ func main() {
 			return
 		}
 		if id <= 0 {
-			showErrorJSON(c, http.StatusBadRequest, "Need id")
+			showErrorJSON(c, http.StatusBadRequest, "Need valid id")
 			return
 		}
 		game := models.Game{}
