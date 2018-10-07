@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -142,6 +143,17 @@ func main() {
 						var buyin Result
 						db.Table("transactions").Select("IFNULL(SUM(amount), 0) AS total").Where("user_id = ? AND game_id = ? AND is_buyin = ?", user.ID, game.ID, true).Scan(&buyin)
 						replyMessage = "現在額:" + all.Total + "\nバイイン:" + buyin.Total
+					case m == "ウホウホ": // ゴリラボタン
+						replyMessages := []string{
+							"殺すぞ",
+							"ブチ殺すぞ",
+							"アア？",
+							"俺とじゃれるか？",
+							"お前は俺の玩具だ",
+							"俺の握力は600kgだ",
+						}
+						rand.Seed(time.Now().UnixNano())
+						replyMessage = replyMessages[rand.Intn(len(replyMessages))]
 					default:
 						replyMessage = usageMessage()
 					}
