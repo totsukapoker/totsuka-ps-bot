@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -82,6 +83,42 @@ func main() {
 		}
 		db.Where("ID in (?)", userIDs).Find(&users)
 
+		type Stat struct {
+			User          models.User
+			CurrentAmount int
+			BuyinAmount   int
+			ROI           string
+			CreatedAt     time.Time
+			UpdatedAt     time.Time
+		}
+		var stats []Stat
+		for _, u := range users {
+			var s Stat
+			s.User = u
+			stats = append(stats, s)
+		}
+		for _, t := range transactions {
+			var stat *Stat
+			for i, s := range stats {
+				if s.User.ID == t.UserID {
+					stat = &stats[i]
+					break
+				}
+			}
+			stat.CurrentAmount += t.Amount
+			if t.IsBuyin == true {
+				stat.BuyinAmount += t.Amount
+			}
+			if stat.UpdatedAt.Before(t.CreatedAt) == true {
+				stat.UpdatedAt = t.CreatedAt
+			}
+		}
+		for i, s := range stats {
+			if s.BuyinAmount > 0 {
+				stats[i].ROI = fmt.Sprintf("%.f%%", float64(s.CurrentAmount)/float64(s.BuyinAmount)*100)
+			}
+		}
+
 		type Log struct {
 			ID        uint
 			Amount    int
@@ -109,6 +146,7 @@ func main() {
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
 			"currentTime": time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("15:04:05"),
 			"game":        game,
+			"stats":       stats,
 			"logs":        logs,
 		})
 	})

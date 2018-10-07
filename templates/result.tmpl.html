@@ -17,9 +17,19 @@
         <td>持ち点</td>
         <td>バイイン</td>
         <td>ROI</td>
+        <td>最終更新</td>
       </tr>
     </thead>
     <tbody>
+      {{range .stats}}
+      <tr>
+        <td><img src="{{.User.PictureURL}}" width="30" height="30">{{.User.DisplayName}}</td>
+        <td>{{.CurrentAmount}}</td>
+        <td>{{.BuyinAmount}}</td>
+        <td>{{.ROI}}</td>
+        <td>{{.UpdatedAt}}</td>
+      </tr>
+      {{end}}
     </tbody>
   </table>
 
