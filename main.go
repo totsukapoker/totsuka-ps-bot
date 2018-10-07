@@ -133,6 +133,15 @@ func main() {
 						transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
 						db.Create(&transaction)
 						replyMessage = "現在額の入力をしました"
+					case checkRegexp(`^(今|いま)いく(つ|ら)(？|\?)$`, m): // 自分の状態質問時
+						type Result struct {
+							Total string
+						}
+						var all Result
+						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&all)
+						var buyin Result
+						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ? AND is_buyin = ?", user.ID, game.ID, true).Scan(&buyin)
+						replyMessage = "現在額:" + all.Total + "\nバイイン:" + buyin.Total
 					default:
 						replyMessage = usageMessage()
 					}
