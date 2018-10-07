@@ -6,12 +6,29 @@
 <body>
   <h1>Game: {{.game.Name}}</h1>
   <p>{{.game.StartedAt}}〜{{.game.EndedAt}}</p>
-  <h2>Stats</h2>
-  <div id="result"></div>
-  <h2>Logs</h2>
-  <div id="log"></div>
-  <h2>Debug</h2>
-  <div id="result"></div>
+
+  <table id="stats">
+    <caption>
+      <strong>現在状況 ({{.currentTime}}現在)</strong>
+    </caption>
+    <thead>
+      <tr>
+        <td>名前</td>
+        <td>持ち点</td>
+        <td>バイイン</td>
+        <td>ROI</td>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <ul id="logs">
+    {{range .logs}}
+    <li>{{.User.DisplayName}} {{if .IsBuyin}}+{{end}}{{.Amount}} ({{.CreatedAt}})</li>
+    {{end}}
+  </ul>
+
   {{template "footer_js.tmpl.html"}}
   <script src="/static/result.js"></script>
 </body>

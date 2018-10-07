@@ -58,14 +58,42 @@ func main() {
 			showErrorHTML(c, http.StatusBadRequest, "Need valid id")
 			return
 		}
+
 		game := models.Game{}
 		db.First(&game, id)
 		if game.ID == 0 {
 			showErrorHTML(c, http.StatusNotFound, "Not found")
 			return
 		}
+
+		transactions := []models.Transaction{}
+		db.Model(&game).Order("id desc").Related(&transactions)
+
+		type Log struct {
+			ID        uint
+			Amount    int
+			IsBuyin   bool
+			CreatedAt time.Time
+			User      models.User
+		}
+		var logs []Log
+		for _, t := range transactions {
+			// FIXME: N+1
+			u := models.User{}
+			db.Model(&t).Related(&u)
+			var l Log
+			l.ID = t.ID
+			l.Amount = t.Amount
+			l.IsBuyin = t.IsBuyin
+			l.CreatedAt = t.CreatedAt
+			l.User = u
+			logs = append(logs, l)
+		}
+
 		c.HTML(http.StatusOK, "result.tmpl.html", gin.H{
-			"game": game,
+			"currentTime": time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("15:04:05"),
+			"game":        game,
+			"logs":        logs,
 		})
 	})
 
