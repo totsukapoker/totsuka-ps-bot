@@ -30,23 +30,24 @@ func main() {
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 
+	// db connection (gorm)
+	db := ConnectDB()
+	defer db.Close()
+	MigrateDB(db)
+
 	// GET: /
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
 	// POST: /callback
-	router.POST("/callback", callback)
+	router.POST("/callback", func(c *gin.Context) {
+		callback(c, db)
+	})
 
 	// GET: /result/:id
 	// ゲーム(id=game_id)の現在の状況及び結果を表示する
 	router.GET("/result/:id", func(c *gin.Context) {
-		// db connection (gorm)
-		db := ConnectDB()
-		defer db.Close()
-		// db migration
-		MigrateDB(db)
-
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			showErrorHTML(c, 500, "strconv error")

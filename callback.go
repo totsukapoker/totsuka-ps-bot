@@ -16,16 +16,11 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func callback(c *gin.Context) {
-	// db connection (gorm)
-	db := ConnectDB()
-	defer db.Close()
-	// db migration
-	MigrateDB(db)
-
+func callback(c *gin.Context, db *gorm.DB) {
 	proxyURL, _ := url.Parse(os.Getenv("FIXIE_URL"))
 	client := &http.Client{
 		Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
