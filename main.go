@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -84,7 +85,32 @@ func main() {
 			showErrorJSON(c, http.StatusNotFound, "Not found")
 			return
 		}
-		c.JSON(http.StatusOK, game.Transactions)
+		transactions := []models.Transaction{}
+		db.Model(&game).Related(&transactions)
+		type Result struct {
+			ID        uint
+			Amount    int
+			IsBuyin   bool
+			CreatedAt time.Time
+			User      models.User
+			Game      models.Game
+		}
+		var result []Result
+		for _, t := range transactions {
+			// FIXME: N+1
+			u := models.User{}
+			db.Model(&t).Related(&u)
+			var r Result
+			r.ID = t.ID
+			r.Amount = t.Amount
+			r.IsBuyin = t.IsBuyin
+			r.CreatedAt = t.CreatedAt
+			r.User = u
+			r.Game = game
+			result = append(result, r)
+		}
+
+		c.JSON(http.StatusOK, result)
 	})
 
 	router.Run(":" + port)
