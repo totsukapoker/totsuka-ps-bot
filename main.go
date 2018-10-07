@@ -68,6 +68,25 @@ func main() {
 		})
 	})
 
+	router.GET("/result/:id/json", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			showErrorJSON(c, http.StatusInternalServerError, "strconv error")
+			return
+		}
+		if id <= 0 {
+			showErrorJSON(c, http.StatusBadRequest, "Need id")
+			return
+		}
+		game := models.Game{}
+		db.First(&game, id)
+		if game.ID == 0 {
+			showErrorJSON(c, http.StatusNotFound, "Not found")
+			return
+		}
+		c.JSON(http.StatusOK, game.Transactions)
+	})
+
 	router.Run(":" + port)
 }
 
@@ -77,6 +96,13 @@ func checkRegexp(reg, str string) bool {
 
 func showErrorHTML(c *gin.Context, code int, message string) {
 	c.HTML(code, "error.tmpl.html", gin.H{
+		"code":    code,
+		"message": message,
+	})
+}
+
+func showErrorJSON(c *gin.Context, code int, message string) {
+	c.JSON(code, gin.H{
 		"code":    code,
 		"message": message,
 	})
