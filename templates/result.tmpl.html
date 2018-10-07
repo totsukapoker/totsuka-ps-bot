@@ -3,13 +3,14 @@
   {{template "header.tmpl.html"}}
 <body>
   <h1>Game: {{.game.Name}}</h1>
-  <h2>{{.game.StartedAt}}〜{{.game.EndedAt}}</h2>
-  <h3>Log</h3>
-  <ul>
-    {{range .game.Transactions}}
-    <li>{{.Amount}} / IsBuyin? {{if .IsBuyin}}yes{{else}}no{{end}}</li>
-    {{end}}
-  </ul>
+  <p>{{.game.StartedAt}}〜{{.game.EndedAt}}</p>
+  <h2>Stats</h2>
+  <div id="result"></div>
+  <h2>Logs</h2>
+  <div id="log"></div>
+  <h2>Debug</h2>
+  <div id="result"></div>
   {{template "footer_js.tmpl.html"}}
+  <script src="/static/result.js"></script>
 </body>
 </html>
