@@ -138,9 +138,9 @@ func main() {
 							Total string
 						}
 						var all Result
-						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&all)
+						db.Table("transactions").Select("IFNULL(SUM(amount), 0) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&all)
 						var buyin Result
-						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ? AND is_buyin = ?", user.ID, game.ID, true).Scan(&buyin)
+						db.Table("transactions").Select("IFNULL(SUM(amount), 0) AS total").Where("user_id = ? AND game_id = ? AND is_buyin = ?", user.ID, game.ID, true).Scan(&buyin)
 						replyMessage = "現在額:" + all.Total + "\nバイイン:" + buyin.Total
 					default:
 						replyMessage = usageMessage()
