@@ -122,7 +122,7 @@ func main() {
 						m, _ := strconv.Atoi(m)
 						transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m, IsBuyin: true}
 						db.Create(&transaction)
-						replyMessage = "バイインの入力をしました"
+						replyMessage = "バイインの入力をしたぞ！"
 					case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
 						m, _ := strconv.Atoi(m)
 						type Result struct {
@@ -132,7 +132,7 @@ func main() {
 						db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&result)
 						transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
 						db.Create(&transaction)
-						replyMessage = "現在額の入力をしました"
+						replyMessage = "現在額の入力をしたぞ！"
 					case checkRegexp(`^(今|いま)いく(つ|ら)(？|\?)$`, m): // 自分の状態質問時
 						type Result struct {
 							Total string
@@ -201,7 +201,7 @@ func main() {
 }
 
 func usageMessage() string {
-	return "使い方:\n・現在の持ち点をそのまま入力(例:12340)\n・バイインで増やした点を入力(例:+5000)"
+	return "使い方:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)"
 }
 
 func normalizeMessage(m string) (msg string) {
