@@ -69,6 +69,19 @@ func main() {
 		transactions := []models.Transaction{}
 		db.Model(&game).Order("id desc").Related(&transactions)
 
+		users := []models.User{}
+		var userIDs []uint
+	L:
+		for _, t := range transactions {
+			for _, i := range userIDs {
+				if t.UserID == i {
+					continue L
+				}
+			}
+			userIDs = append(userIDs, t.UserID)
+		}
+		db.Where("ID in (?)", userIDs).Find(&users)
+
 		type Log struct {
 			ID        uint
 			Amount    int
@@ -78,15 +91,18 @@ func main() {
 		}
 		var logs []Log
 		for _, t := range transactions {
-			// FIXME: N+1
-			u := models.User{}
-			db.Model(&t).Related(&u)
+			user := models.User{}
+			for _, u := range users {
+				if u.ID == t.UserID {
+					user = u
+				}
+			}
 			var l Log
 			l.ID = t.ID
 			l.Amount = t.Amount
 			l.IsBuyin = t.IsBuyin
 			l.CreatedAt = t.CreatedAt
-			l.User = u
+			l.User = user
 			logs = append(logs, l)
 		}
 
