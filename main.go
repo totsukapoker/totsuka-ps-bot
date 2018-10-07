@@ -100,7 +100,7 @@ func main() {
 				if _, err = bot.ReplyMessage(
 					event.ReplyToken,
 					linebot.NewTextMessage(
-						"現在開催されているゲームがないので利用できません。",
+						"今お前と遊んでいる暇はない。",
 					),
 				).Do(); err != nil {
 					fmt.Println("ERROR Game-is-not-exist ReplyMessage:", err)
@@ -213,7 +213,7 @@ func main() {
 }
 
 func usageMessage() string {
-	return "使い方:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)"
+	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)"
 }
 
 func normalizeMessage(m string) (msg string) {
