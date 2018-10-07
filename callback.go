@@ -126,6 +126,14 @@ func callback(c *gin.Context, db *gorm.DB) {
 					}
 					rand.Seed(time.Now().UnixNano())
 					replyMessage = replyMessages[rand.Intn(len(replyMessages))]
+				case checkRegexp(`^(取消|取り消し|取消し|とりけし|トリケシ|undo|UNDO|Undo)$`, m): // 1つ前のアクションを取り消し
+					replyMessage = "お前に使う時間はない"
+					var t models.Transaction
+					db.Where("user_id = ? AND game_id = ?", user.ID, game.ID).Order("id desc").First(&t)
+					if t.ID > 0 {
+						db.Delete(&t)
+						replyMessage = "次はないぞ？心しろ。"
+					}
 				default:
 					replyMessage = usageMessage()
 				}
@@ -159,7 +167,7 @@ func callback(c *gin.Context, db *gorm.DB) {
 }
 
 func usageMessage() string {
-	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)"
+	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消"
 }
 
 func normalizeMessage(m string) (msg string) {
