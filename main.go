@@ -201,7 +201,7 @@ func main() {
 		c.JSON(http.StatusOK, result)
 	})
 
-	router.Run(":" + string(conf.Port))
+	router.Run(":" + strconv.Itoa(conf.Port))
 }
 
 func checkRegexp(reg, str string) bool {
