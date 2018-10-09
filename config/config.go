@@ -23,7 +23,7 @@ func Load() (*Config, error) {
 	// default values
 	config := &Config{
 		Port:  8000,
-		DbURL: "root@/totsuka_ps_bot",
+		DbURL: "mysql://root:@localhost/totsuka_ps_bot",
 	}
 
 	loadDotenv()
@@ -89,10 +89,9 @@ func loadDbURL(config *Config) error {
 	} else if os.Getenv("CLEARDB_DATABASE_URL") != "" {
 		dbURL = os.Getenv("CLEARDB_DATABASE_URL")
 	}
-	if dbURL == "" {
-		return fmt.Errorf("Require DATABASE_URL")
+	if dbURL != "" {
+		config.DbURL = dbURL
 	}
-	config.DbURL = dbURL
 	return nil
 }
 

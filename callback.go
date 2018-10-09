@@ -5,12 +5,12 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"github.com/yakkun/totsuka-ps-bot/config"
 	"github.com/yakkun/totsuka-ps-bot/models"
 
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -20,13 +20,13 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func callback(c *gin.Context, db *gorm.DB) {
-	proxyURL, _ := url.Parse(os.Getenv("FIXIE_URL"))
+func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
+	proxyURL, _ := url.Parse(conf.FixieURL)
 	client := &http.Client{
 		Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
 	}
 	bot, err := linebot.New(
-		os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_ACCESS_TOKEN"), linebot.WithHTTPClient(client),
+		conf.LineChannelSecret, conf.LineChannelAccessToken, linebot.WithHTTPClient(client),
 	)
 	if err != nil {
 		fmt.Println("ERROR linebot.New:", err)
