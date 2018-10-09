@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"sort"
 	"strconv"
 	"time"
 
@@ -86,7 +87,7 @@ func main() {
 			CurrentAmount int
 			BuyinAmount   int
 			ROI           float64
-			CreatedAt     time.Time
+			StartedAt     time.Time
 			UpdatedAt     time.Time
 		}
 		type TotalStat struct {
@@ -112,6 +113,9 @@ func main() {
 			if t.IsBuyin == true {
 				stat.BuyinAmount += t.Amount
 			}
+			if stat.StartedAt.IsZero() == true || stat.StartedAt.After(t.CreatedAt) == true {
+				stat.StartedAt = t.CreatedAt
+			}
 			if stat.UpdatedAt.Before(t.CreatedAt) == true {
 				stat.UpdatedAt = t.CreatedAt
 			}
@@ -123,6 +127,9 @@ func main() {
 				stats[i].ROI = float64(s.CurrentAmount)/float64(s.BuyinAmount)*100 - 100
 			}
 		}
+		sort.Slice(stats, func(i, j int) bool {
+			return stats[i].StartedAt.Before(stats[j].StartedAt)
+		})
 
 		type Log struct {
 			ID        uint
