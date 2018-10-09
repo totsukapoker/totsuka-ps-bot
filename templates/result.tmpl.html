@@ -25,8 +25,8 @@
         <td><img src="{{.User.PictureURL}}" width="30" height="30">{{.User.DisplayName}}</td>
         <td class="text-right">{{.CurrentAmount}}</td>
         <td class="text-right">{{.BuyinAmount}}</td>
-        <td class="text-right {{if gt .ROI 100.0}}table-success{{end}}">
-          {{printf "%.f" .ROI}}%
+        <td class="text-right text-{{if gt .ROI 0.0}}primary{{else if lt .ROI 0.0}}danger{{else}}dark{{end}}">
+          {{if gt .ROI 0.0}}+{{end}}{{printf "%.1f" .ROI}}%
         </td>
         <td>{{.UpdatedAt.Format "1/2 15:04"}}</td>
       </tr>

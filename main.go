@@ -120,7 +120,7 @@ func main() {
 			totalstat.CurrentAmount += s.CurrentAmount
 			totalstat.BuyinAmount += s.BuyinAmount
 			if s.BuyinAmount > 0 {
-				stats[i].ROI = float64(s.CurrentAmount) / float64(s.BuyinAmount) * 100
+				stats[i].ROI = float64(s.CurrentAmount)/float64(s.BuyinAmount)*100 - 100
 			}
 		}
 
