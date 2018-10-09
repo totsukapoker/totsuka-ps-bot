@@ -1,12 +1,13 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import "time"
 
 // Transaction model
 type Transaction struct {
-	gorm.Model
-	UserID  uint
-	GameID  uint
-	Amount  int  `gorm:"not null"`
-	IsBuyin bool `gorm:"not null;default:0"`
+	ID        uint `gorm:"primary_key"`
+	CreatedAt time.Time
+	UserID    uint
+	GameID    uint
+	Amount    int  `gorm:"not null"`
+	IsBuyin   bool `gorm:"not null;default:0"`
 }
