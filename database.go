@@ -30,7 +30,7 @@ func MigrateDB(db *gorm.DB) {
 }
 
 func connectionVars(url string) (driver string, source string) {
-	re, _ := regexp.Compile("([^:]+)://([^:]+):([^@]+)@([^/]+)/([^?]+)")
+	re, _ := regexp.Compile("([^:]+)://([^:]+):([^@]+)?@([^/]+)/([^?]+)")
 	match := re.FindStringSubmatch(url)
 	driver = match[1]
 	if driver == "mysql" {
