@@ -3,13 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"github.com/yakkun/totsuka-ps-bot/config"
 	"github.com/yakkun/totsuka-ps-bot/models"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,10 +17,9 @@ import (
 )
 
 func main() {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("$PORT must be set")
+	conf, err := config.Load()
+	if err != nil {
+		log.Fatal("Failed to load config: %+v", err)
 	}
 
 	// Prepare http router (gin)
@@ -32,7 +31,7 @@ func main() {
 	router.Static("/static", "static")
 
 	// db connection (gorm)
-	db := ConnectDB()
+	db := ConnectDB(conf.DbURL)
 	defer db.Close()
 	MigrateDB(db)
 
@@ -43,7 +42,7 @@ func main() {
 
 	// POST: /callback
 	router.POST("/callback", func(c *gin.Context) {
-		callback(c, db)
+		callback(c, db, conf)
 	})
 
 	// GET: /result/:id
@@ -202,7 +201,7 @@ func main() {
 		c.JSON(http.StatusOK, result)
 	})
 
-	router.Run(":" + port)
+	router.Run(":" + strconv.Itoa(conf.Port))
 }
 
 func checkRegexp(reg, str string) bool {

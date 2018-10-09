@@ -57,6 +57,12 @@
 			"revisionTime": "2018-03-08T03:36:59Z"
 		},
 		{
+			"checksumSHA1": "I+g5iffd0bNDiI8swxzsHiJxBz0=",
+			"path": "github.com/joho/godotenv",
+			"revision": "c0b86d615e06d6fa5f869364d68f774ba49a86e3",
+			"revisionTime": "2018-09-27T05:32:03Z"
+		},
+		{
 			"checksumSHA1": "L+b8rXd/ZpkaTeEcXsqhh3pCZyE=",
 			"path": "github.com/line/line-bot-sdk-go/linebot",
 			"revision": "86c2e29d979408330aca9614afa173a29784228b",
