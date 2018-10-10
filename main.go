@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"regexp"
 	"sort"
@@ -91,8 +92,10 @@ func main() {
 			UpdatedAt     time.Time
 		}
 		type TotalStat struct {
-			CurrentAmount int
-			BuyinAmount   int
+			CurrentAmount       int
+			BuyinAmount         int
+			DifferenceAmount    int
+			DifferenceAbsAmount int
 		}
 		var stats []Stat
 		var totalstat TotalStat
@@ -127,6 +130,8 @@ func main() {
 				stats[i].ROI = float64(s.CurrentAmount)/float64(s.BuyinAmount)*100 - 100
 			}
 		}
+		totalstat.DifferenceAmount = totalstat.CurrentAmount - totalstat.BuyinAmount
+		totalstat.DifferenceAbsAmount = int(math.Abs(float64(totalstat.DifferenceAmount)))
 		sort.Slice(stats, func(i, j int) bool {
 			return stats[i].StartedAt.Before(stats[j].StartedAt)
 		})

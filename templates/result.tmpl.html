@@ -32,12 +32,12 @@
       </tr>
       {{end}}
       {{if gt .totalstat.CurrentAmount 0}}
-      <tr class="table-{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}success{{else}}danger{{end}}">
+      <tr class="{{if eq .totalstat.DifferenceAmount 0}}table-success{{else}}table-danger text-danger{{end}}">
         <td>&nbsp;</td>
         <td class="text-right">{{.totalstat.CurrentAmount}}</td>
         <td class="text-right">{{.totalstat.BuyinAmount}}</td>
         <td colspan="2">
-          →{{if eq .totalstat.CurrentAmount .totalstat.BuyinAmount}}OK！{{else}}差異があります{{end}}
+          →&nbsp;{{if eq .totalstat.DifferenceAmount 0}}OK！{{else}}{{if gt .totalstat.DifferenceAmount 0}}現在額{{else if lt .totalstat.DifferenceAmount 0}}バイイン額{{end}}が&nbsp;<strong>{{.totalstat.DifferenceAbsAmount}}</strong>&nbsp;大きいです{{end}}
         </td>
       </tr>
       {{end}}
