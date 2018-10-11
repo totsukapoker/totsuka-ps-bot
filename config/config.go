@@ -13,7 +13,7 @@ import (
 type Config struct {
 	Port                   int
 	DbURL                  string
-	FixieURL               string
+	ProxyURL               string
 	LineChannelSecret      string
 	LineChannelAccessToken string
 }
@@ -54,7 +54,7 @@ func loadAll(config *Config) error {
 	if err != nil {
 		return err
 	}
-	err = loadFixieURL(config)
+	err = loadProxyURL(config)
 	if err != nil {
 		return err
 	}
@@ -95,8 +95,16 @@ func loadDbURL(config *Config) error {
 	return nil
 }
 
-func loadFixieURL(config *Config) error {
-	config.FixieURL = os.Getenv("FIXIE_URL")
+func loadProxyURL(config *Config) error {
+	var proxyURL string
+	if os.Getenv("PROXY_URL") != "" {
+		proxyURL = os.Getenv("PROXY_URL")
+	} else if os.Getenv("FIXIE_URL") != "" {
+		proxyURL = os.Getenv("FIXIE_URL")
+	}
+	if proxyURL != "" {
+		config.ProxyURL = proxyURL
+	}
 	return nil
 }
 
