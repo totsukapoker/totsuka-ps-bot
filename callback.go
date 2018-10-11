@@ -21,7 +21,7 @@ import (
 )
 
 func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
-	proxyURL, _ := url.Parse(conf.FixieURL)
+	proxyURL, _ := url.Parse(conf.ProxyURL)
 	client := &http.Client{
 		Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
 	}
