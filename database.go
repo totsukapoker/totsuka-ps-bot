@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/yakkun/totsuka-ps-bot/models"
+	"github.com/totsukapoker/totsuka-ps-bot/models"
 )
 
 // ConnectDB - Provide connection to database with gorm

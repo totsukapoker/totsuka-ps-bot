@@ -26,7 +26,7 @@ DB 接続先の変更や起動ポートの変更など、環境変数の設定�
 ## Production
 
 - `master` に push されたものが Heroku に自動デプロイされます。
-- [リリース](https://github.com/yakkun/totsuka-ps-bot/releases)は雰囲気でつけてるよ（雰囲気とは
+- [リリース](https://github.com/totsukapoker/totsuka-ps-bot/releases)は雰囲気でつけてるよ（雰囲気とは
 
 ## Misc
 
