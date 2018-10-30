@@ -11,8 +11,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
-	"github.com/yakkun/totsuka-ps-bot/config"
-	"github.com/yakkun/totsuka-ps-bot/models"
+	"github.com/totsukapoker/totsuka-ps-bot/config"
+	"github.com/totsukapoker/totsuka-ps-bot/models"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
