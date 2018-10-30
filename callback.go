@@ -134,6 +134,13 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 						db.Delete(&t)
 						replyMessage = "次はないぞ？心しろ。"
 					}
+				case checkRegexp(`^名前を((消|け)して|リセット)$`, m): // 設定した名前をリセット
+					replyMessage = "お前に使う時間はない"
+					if user.MyName != "" {
+						user.MyName = ""
+						db.Save(&user)
+						replyMessage = "今の名前(" + user.DisplayName + ")に戻したぞ。"
+					}
 				default:
 					replyMessage = usageMessage()
 				}
@@ -167,7 +174,7 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 }
 
 func usageMessage() string {
-	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消"
+	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消\n・｢名前をリセット｣でLINEの名前に戻す"
 }
 
 func normalizeMessage(m string) (msg string) {
