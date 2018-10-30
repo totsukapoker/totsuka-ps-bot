@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -134,6 +135,20 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 						db.Delete(&t)
 						replyMessage = "次はないぞ？心しろ。"
 					}
+				case checkRegexp(`^名前を.+にして$`, m): // 名前を設定
+					// FIXME: 効率悪いけどもう一回正規表現使って名前部分だけを抜き出す
+					r := regexp.MustCompile("^名前を(.+)にして$")
+					g := r.FindStringSubmatch(m) // g[1] が名前になる
+					user.MyName = g[1]
+					db.Save(&user)
+					replyMessage = g[1] + "にしたぞ。"
+				case checkRegexp(`^名前を((消|け)して|リセット)$`, m): // 設定した名前をリセット
+					replyMessage = "お前に使う時間はない"
+					if user.MyName != "" {
+						user.MyName = ""
+						db.Save(&user)
+						replyMessage = "今の名前(" + user.DisplayName + ")に戻したぞ。"
+					}
 				default:
 					replyMessage = usageMessage()
 				}
@@ -167,7 +182,7 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 }
 
 func usageMessage() string {
-	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消"
+	return "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消\n・｢名前をxxxにして｣\n・｢名前をリセット｣"
 }
 
 func normalizeMessage(m string) (msg string) {

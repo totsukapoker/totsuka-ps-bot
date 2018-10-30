@@ -9,5 +9,6 @@ type User struct {
 	DisplayName   string `gorm:"not null"`
 	PictureURL    string
 	StatusMessage string
+	MyName        string
 	Transactions  []Transaction
 }
