@@ -22,7 +22,7 @@
     <tbody>
       {{range .stats}}
       <tr>
-        <td><img src="{{.User.PictureURL}}" width="30" height="30">{{.User.DisplayName}}</td>
+        <td><img src="{{.User.PictureURL}}" width="30" height="30">{{if ne .User.MyName ""}}{{.User.MyName}}{{else}}{{.User.DisplayName}}{{end}}</td>
         <td class="text-right">{{.CurrentAmount}}</td>
         <td class="text-right">{{.BuyinAmount}}</td>
         <td class="text-right text-{{if gt .ROI 0.0}}primary{{else if lt .ROI 0.0}}danger{{else}}dark{{end}}">
