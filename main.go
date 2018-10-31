@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
+	"github.com/joho/godotenv"
 	"github.com/totsukapoker/totsuka-ps-bot/config"
 	"github.com/totsukapoker/totsuka-ps-bot/models"
 
@@ -19,6 +20,11 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Print("Error loading .env file. But you could be ignore me.")
+	}
+
 	conf, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %+v", err)

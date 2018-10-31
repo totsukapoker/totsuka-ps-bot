@@ -2,11 +2,8 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
-
-	"github.com/joho/godotenv"
 )
 
 // Config struct for config values
@@ -26,22 +23,12 @@ func Load() (*Config, error) {
 		DbURL: "mysql://root:@localhost/totsuka_ps_bot",
 	}
 
-	loadDotenv()
-
 	err := loadAll(config)
 	if err != nil {
 		return nil, err
 	}
 
 	return config, nil
-}
-
-func loadDotenv() error {
-	err := godotenv.Load()
-	if err != nil {
-		log.Print("Error loading .env file. But you could be ignore me.")
-	}
-	return err
 }
 
 func loadAll(config *Config) error {
