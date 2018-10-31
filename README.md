@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/totsukapoker/totsuka-ps-bot.svg?style=svg)](https://circleci.com/gh/totsukapoker/totsuka-ps-bot)
+
 # totsuka-ps-bot
 
 [戸塚ポーカースクール](https://totsukapoker.com)のゲームで使用する点数管理LINE Botです。
