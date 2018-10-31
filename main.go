@@ -21,7 +21,7 @@ import (
 func main() {
 	conf, err := config.Load()
 	if err != nil {
-		log.Fatal("Failed to load config: %+v", err)
+		log.Fatalf("Failed to load config: %+v", err)
 	}
 
 	// Prepare http router (gin)
