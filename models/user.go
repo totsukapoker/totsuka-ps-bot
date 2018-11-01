@@ -12,3 +12,11 @@ type User struct {
 	MyName        string
 	Transactions  []Transaction
 }
+
+// Name - Get name of user on this service
+func (user *User) Name() string {
+	if user.MyName != "" {
+		return user.MyName
+	}
+	return user.DisplayName
+}
