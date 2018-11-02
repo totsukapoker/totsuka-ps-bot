@@ -175,50 +175,6 @@ func main() {
 		})
 	})
 
-	router.GET("/result/:id/json", func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			showErrorJSON(c, http.StatusInternalServerError, "strconv error")
-			return
-		}
-		if id <= 0 {
-			showErrorJSON(c, http.StatusBadRequest, "Need valid id")
-			return
-		}
-		game := models.Game{}
-		db.First(&game, id)
-		if game.ID == 0 {
-			showErrorJSON(c, http.StatusNotFound, "Not found")
-			return
-		}
-		transactions := []models.Transaction{}
-		db.Model(&game).Related(&transactions)
-		type Result struct {
-			ID        uint
-			Amount    int
-			IsBuyin   bool
-			CreatedAt time.Time
-			User      models.User
-			Game      models.Game
-		}
-		var result []Result
-		for _, t := range transactions {
-			// FIXME: N+1
-			u := models.User{}
-			db.Model(&t).Related(&u)
-			var r Result
-			r.ID = t.ID
-			r.Amount = t.Amount
-			r.IsBuyin = t.IsBuyin
-			r.CreatedAt = t.CreatedAt
-			r.User = u
-			r.Game = game
-			result = append(result, r)
-		}
-
-		c.JSON(http.StatusOK, result)
-	})
-
 	router.Run(":" + strconv.Itoa(conf.Port))
 }
 
