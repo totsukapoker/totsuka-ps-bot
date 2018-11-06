@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/totsukapoker/totsuka-ps-bot/repositories"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/joho/godotenv"
@@ -43,6 +45,11 @@ func main() {
 	defer db.Close()
 	MigrateDB(db)
 
+	// Repositories
+	ur := repositories.NewUserRepository(db)
+	gr := repositories.NewGameRepository(db)
+	tr := repositories.NewTransactionRepository(db)
+
 	// GET: /
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
@@ -50,7 +57,7 @@ func main() {
 
 	// POST: /callback
 	router.POST("/callback", func(c *gin.Context) {
-		callback(c, db, conf)
+		callback(c, conf, ur, gr, tr)
 	})
 
 	// GET: /result/:id
@@ -66,17 +73,14 @@ func main() {
 			return
 		}
 
-		game := models.Game{}
-		db.First(&game, id)
+		game := gr.First(uint(id))
 		if game.ID == 0 {
 			showErrorHTML(c, http.StatusNotFound, "Not found")
 			return
 		}
 
-		transactions := []models.Transaction{}
-		db.Model(&game).Order("id desc").Related(&transactions)
+		transactions := tr.FindByGame(game)
 
-		users := []models.User{}
 		var userIDs []uint
 	L:
 		for _, t := range transactions {
@@ -87,7 +91,7 @@ func main() {
 			}
 			userIDs = append(userIDs, t.UserID)
 		}
-		db.Where("ID in (?)", userIDs).Find(&users)
+		users := ur.FindByIDs(userIDs)
 
 		type Stat struct {
 			User          models.User

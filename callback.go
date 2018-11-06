@@ -13,15 +13,15 @@ import (
 	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/totsukapoker/totsuka-ps-bot/config"
 	"github.com/totsukapoker/totsuka-ps-bot/models"
+	"github.com/totsukapoker/totsuka-ps-bot/repositories"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
+func callback(c *gin.Context, conf *config.Config, ur *repositories.UserRepository, gr *repositories.GameRepository, tr *repositories.TransactionRepository) {
 	proxyURL, _ := url.Parse(conf.ProxyURL)
 	client := &http.Client{
 		Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
@@ -56,7 +56,7 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 				c.AbortWithStatus(400)
 				return
 			}
-			db.Where(models.User{UserID: event.Source.UserID}).Assign(models.User{DisplayName: profile.DisplayName, PictureURL: profile.PictureURL, StatusMessage: profile.StatusMessage}).FirstOrCreate(&user)
+			user = ur.FirstOrCreate(event.Source.UserID, profile.DisplayName, profile.PictureURL, profile.StatusMessage)
 		}
 
 		if user.ID == 0 {
@@ -66,8 +66,7 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 		}
 
 		// Game loading
-		game := models.Game{}
-		db.Where("? BETWEEN started_at AND ended_at", time.Now()).First(&game)
+		game := gr.Current()
 		if game.ID == 0 {
 			fmt.Println("ERROR Game is not exist")
 			if _, err = bot.ReplyMessage(
@@ -94,28 +93,17 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 				switch {
 				case checkRegexp(`^\+[0-9]+$`, m): // バイイン時
 					m, _ := strconv.Atoi(m)
-					transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m, IsBuyin: true}
-					db.Create(&transaction)
+					tr.Create(user, game, m, true)
 					replyMessage = "バイインの入力をしたぞ！"
 				case checkRegexp(`^[0-9]+$`, m): // 現在額入力時
 					m, _ := strconv.Atoi(m)
-					type Result struct {
-						Total int
-					}
-					var result Result
-					db.Table("transactions").Select("SUM(amount) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&result)
-					transaction := models.Transaction{UserID: user.ID, GameID: game.ID, Amount: m - result.Total, IsBuyin: false}
-					db.Create(&transaction)
+					all := tr.CurrentAmountBy(user, game)
+					tr.Create(user, game, m-all, false)
 					replyMessage = "現在額の入力をしたぞ！"
 				case checkRegexp(`^(今|いま)いく(つ|ら)(？|\?)$`, m): // 自分の状態質問時
-					type Result struct {
-						Total string
-					}
-					var all Result
-					db.Table("transactions").Select("IFNULL(SUM(amount), 0) AS total").Where("user_id = ? AND game_id = ?", user.ID, game.ID).Scan(&all)
-					var buyin Result
-					db.Table("transactions").Select("IFNULL(SUM(amount), 0) AS total").Where("user_id = ? AND game_id = ? AND is_buyin = ?", user.ID, game.ID, true).Scan(&buyin)
-					replyMessage = "現在額:" + all.Total + "\nバイイン:" + buyin.Total
+					all := tr.CurrentAmountBy(user, game)
+					buyin := tr.CurrentAmountBuyinBy(user, game)
+					replyMessage = "現在額:" + strconv.Itoa(all) + "\nバイイン:" + strconv.Itoa(buyin)
 				case m == "ウホウホ": // ゴリラボタン
 					replyMessages := []string{
 						"殺すぞ",
@@ -129,24 +117,21 @@ func callback(c *gin.Context, db *gorm.DB, conf *config.Config) {
 					replyMessage = replyMessages[rand.Intn(len(replyMessages))]
 				case checkRegexp(`^(取消|取り消し|取消し|とりけし|トリケシ|undo|UNDO|Undo)$`, m): // 1つ前のアクションを取り消し
 					replyMessage = "お前に使う時間はない"
-					var t models.Transaction
-					db.Where("user_id = ? AND game_id = ?", user.ID, game.ID).Order("id desc").First(&t)
+					t := tr.LastBy(user, game)
 					if t.ID > 0 {
-						db.Delete(&t)
+						tr.Delete(&t)
 						replyMessage = "次はないぞ？心しろ。"
 					}
 				case checkRegexp(`^名前を.+にして$`, m): // 名前を設定
 					// FIXME: 効率悪いけどもう一回正規表現使って名前部分だけを抜き出す
 					r := regexp.MustCompile("^名前を(.+)にして$")
 					g := r.FindStringSubmatch(m) // g[1] が名前になる
-					user.MyName = g[1]
-					db.Save(&user)
+					ur.SetMyName(&user, g[1])
 					replyMessage = g[1] + "にしたぞ。"
 				case checkRegexp(`^名前を((消|け)して|リセット)$`, m): // 設定した名前をリセット
 					replyMessage = "お前に使う時間はない"
 					if user.MyName != "" {
-						user.MyName = ""
-						db.Save(&user)
+						ur.SetMyName(&user, "")
 						replyMessage = "今の名前(" + user.DisplayName + ")に戻したぞ。"
 					}
 				default:
