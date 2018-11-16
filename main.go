@@ -57,7 +57,9 @@ func main() {
 	})
 
 	router.GET("/result/:id", func(c *gin.Context) {
-		handlers.NewResultHandler(c, conf, ur, gr, tr).Run()
+		if err := handlers.NewResultHandler(c, conf, ur, gr, tr).Run(); err != nil {
+			log.Printf("ResultHandler error: %#v", err)
+		}
 	})
 
 	router.Run(":" + strconv.Itoa(conf.Port))
