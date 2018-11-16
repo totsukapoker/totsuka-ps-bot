@@ -18,23 +18,23 @@ func TestNewCallbackHandler(t *testing.T) {
 
 	h := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
 	if h.c != &c {
-		t.Errorf("got: %v, expected: %v", h.c, c)
+		t.Errorf("CallbackHandler.c = %#v; want: %#v", h.c, c)
 	}
 	if h.conf != &conf {
-		t.Errorf("got: %v, expected: %v", h.conf, conf)
+		t.Errorf("CallbackHandler.conf = %#v; want: %#v", h.conf, conf)
 	}
 	if h.ur != &ur {
-		t.Errorf("got: %v, expected: %v", h.ur, ur)
+		t.Errorf("CallbackHandler.ur = %#v; want: %#v", h.ur, ur)
 	}
 	if h.gr != &gr {
-		t.Errorf("got: %v, expected: %v", h.gr, gr)
+		t.Errorf("CallbackHandler.gr = %#v; want: %#v", h.gr, gr)
 	}
 	if h.tr != &tr {
-		t.Errorf("got: %v, expected: %v", h.tr, tr)
+		t.Errorf("CallbackHandler.tr =  %#v; want: %#v", h.tr, tr)
 	}
 	expectedUsage := "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消\n・｢名前をxxxにして｣\n・｢名前をリセット｣"
 	if h.usage != expectedUsage {
-		t.Errorf("got: %v, expected: %v", h.usage, expectedUsage)
+		t.Errorf("CallbackHandler.usage = %#v; want: %#v", h.usage, expectedUsage)
 	}
 }
 
@@ -54,6 +54,9 @@ func TestCallbackHandler_checkRegexp(t *testing.T) {
 		reg, str string
 		want     bool
 	}{
+		{"", "", true},
+		{".", "A", true},
+		{".", "", false},
 		{"^やっくん$", "やっくん", true},
 		{"^もっくん$", "やっくん", false},
 		{"^やっ", "やっくん", true},
@@ -66,7 +69,7 @@ func TestCallbackHandler_checkRegexp(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
 			if got := h.checkRegexp(tt.reg, tt.str); got != tt.want {
-				t.Errorf("reg = %#v, str = %#v, want = %v, got = %v", tt.reg, tt.str, tt.want, got)
+				t.Errorf("CallbackHandler.checkRegexp(%#v, %#v) = %#v; want: %#v", tt.reg, tt.str, got, tt.want)
 			}
 		})
 	}
@@ -83,6 +86,7 @@ func TestCallbackHandler_normalizeMessage(t *testing.T) {
 	tests := []struct {
 		str, want string
 	}{
+		{"", ""},
 		{"やっくん", "やっくん"},
 		{"や　く ん", "や　く ん"},
 		{"AbCdE", "AbCdE"},
@@ -92,7 +96,7 @@ func TestCallbackHandler_normalizeMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
 			if got := h.normalizeMessage(tt.str); got != tt.want {
-				t.Errorf("str = %#v, want = %v, got = %v", tt.str, tt.want, got)
+				t.Errorf("CallbackHandler.normalizeMessage(%#v) = %#v; want: %#v", tt.str, got, tt.want)
 			}
 		})
 	}
