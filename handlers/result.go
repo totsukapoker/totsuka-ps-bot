@@ -169,10 +169,3 @@ func (h *ResultHandler) showErrorHTML(code int, message string) {
 		"message": message,
 	})
 }
-
-func (h *ResultHandler) showErrorJSON(code int, message string) {
-	h.c.JSON(code, gin.H{
-		"code":    code,
-		"message": message,
-	})
-}
