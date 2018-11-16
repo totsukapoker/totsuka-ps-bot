@@ -46,18 +46,14 @@ func main() {
 	gr := repositories.NewGameRepository(db)
 	tr := repositories.NewTransactionRepository(db)
 
-	// GET: /
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
-	// POST: /callback
 	router.POST("/callback", func(c *gin.Context) {
 		handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run()
 	})
 
-	// GET: /result/:id
-	// ゲーム(id=game_id)の現在の状況及び結果を表示する
 	router.GET("/result/:id", func(c *gin.Context) {
 		handlers.NewResultHandler(c, conf, ur, gr, tr).Run()
 	})
