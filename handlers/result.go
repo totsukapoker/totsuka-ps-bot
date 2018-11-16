@@ -43,7 +43,7 @@ func (h *ResultHandler) Run() {
 		if game.ID == 0 {
 			h.showErrorHTML(http.StatusNotFound, "No game is running now.")
 		}
-		h.c.Redirect(http.StatusMovedPermanently, "/result/"+fmt.Sprint(game.ID))
+		h.c.Redirect(http.StatusFound, "/result/"+fmt.Sprint(game.ID))
 		return
 	}
 
