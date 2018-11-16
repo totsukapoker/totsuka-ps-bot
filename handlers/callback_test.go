@@ -16,7 +16,10 @@ func TestNewCallbackHandler(t *testing.T) {
 	gr := repositories.GameRepository{}
 	tr := repositories.TransactionRepository{}
 
-	h := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	h, err := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	if err != nil {
+		t.Fatalf("%#v", err)
+	}
 	if h.c != &c {
 		t.Errorf("CallbackHandler.c = %#v; want: %#v", h.c, c)
 	}
@@ -32,13 +35,89 @@ func TestNewCallbackHandler(t *testing.T) {
 	if h.tr != &tr {
 		t.Errorf("CallbackHandler.tr =  %#v; want: %#v", h.tr, tr)
 	}
-	expectedUsage := "こう使え:\n・現在額をそのまま入力(例:12340)\n・バイインした額を入力(例:+5000)\n・｢取消｣で1つ前の入力を取消\n・｢名前をxxxにして｣\n・｢名前をリセット｣"
-	if h.usage != expectedUsage {
-		t.Errorf("CallbackHandler.usage = %#v; want: %#v", h.usage, expectedUsage)
+	if h.Messages.Usage == "" {
+		t.Errorf("CallbackHandler.Messages.Usage is empty")
+	}
+	if h.Messages.NoGame == "" {
+		t.Errorf("CallbackHandler.Messages.NoGame is empty")
+	}
+	if h.Messages.Follow == "" {
+		t.Errorf("CallbackHandler.Messages.Follow is empty")
+	}
+	if len(h.Messages.Gorilla) == 0 {
+		t.Errorf("CallbackHandler.Messages.Gorilla is empty")
+	}
+	if h.Messages.BuyinDone == "" {
+		t.Errorf("CallbackHandler.Messages.BuyinDone is empty")
+	}
+	if h.Messages.CurrentAmountDone == "" {
+		t.Errorf("CallbackHandler.Messages.CurrentAmountDone is empty")
+	}
+	if h.Messages.CurrentInfo == "" {
+		t.Errorf("CallbackHandler.Messages.CurrentInfo is empty")
+	}
+	if h.Messages.NoUndo == "" {
+		t.Errorf("CallbackHandler.Messages.NoUndo is empty")
+	}
+	if h.Messages.UndoDone == "" {
+		t.Errorf("CallbackHandler.Messages.UndoDone is empty")
+	}
+	if h.Messages.NamedDone == "" {
+		t.Errorf("CallbackHandler.Messages.NamedDone is empty")
+	}
+	if h.Messages.NoNamed == "" {
+		t.Errorf("CallbackHandler.Messages.NoNamed is empty")
+	}
+	if h.Messages.ResetNamedDone == "" {
+		t.Errorf("CallbackHandler.Messages.ResetNamedDone is empty")
 	}
 }
 
 func TestCallbackHandler_Run(t *testing.T) {
+	t.Skip("implement me")
+}
+
+func TestCallbackHandler_loadMessages(t *testing.T) {
+	t.Skip("implement me")
+}
+
+func TestCallbackHandler_loadUser(t *testing.T) {
+	t.Skip("implement me")
+}
+
+func TestCallbackHandler_loadGame(t *testing.T) {
+	t.Skip("implement me")
+}
+
+func TestCallbackHandler_loadLinebot(t *testing.T) {
+	t.Run("If secret and token was not set", func(t *testing.T) {
+		h := &CallbackHandler{conf: &config.Config{
+			LineChannelSecret: "",
+		}}
+		err := h.loadLinebot()
+		if err == nil {
+			t.Fatalf("want: some error")
+		}
+		want := "missing channel secret"
+		if err.Error() != want {
+			t.Errorf("error = %#v; want: %#v", err.Error(), want)
+		}
+	})
+
+	t.Run("All clean", func(t *testing.T) {
+		conf := config.Config{
+			LineChannelSecret:      "SOMESECRET",
+			LineChannelAccessToken: "SOMETOKEN",
+			ProxyURL:               "SOMEPROXY",
+		}
+		h := &CallbackHandler{conf: &conf}
+		if err := h.loadLinebot(); err != nil {
+			t.Fatalf("%#v", err)
+		}
+	})
+}
+
+func TestCallbackHandler_replyNoGame(t *testing.T) {
 	t.Skip("implement me")
 }
 
@@ -48,7 +127,10 @@ func TestCallbackHandler_checkRegexp(t *testing.T) {
 	ur := repositories.UserRepository{}
 	gr := repositories.GameRepository{}
 	tr := repositories.TransactionRepository{}
-	h := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	h, err := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	if err != nil {
+		t.Fatalf("%#v", err)
+	}
 
 	tests := []struct {
 		reg, str string
@@ -81,7 +163,10 @@ func TestCallbackHandler_normalizeMessage(t *testing.T) {
 	ur := repositories.UserRepository{}
 	gr := repositories.GameRepository{}
 	tr := repositories.TransactionRepository{}
-	h := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	h, err := NewCallbackHandler(&c, &conf, &ur, &gr, &tr)
+	if err != nil {
+		t.Fatalf("%#v", err)
+	}
 
 	tests := []struct {
 		str, want string

@@ -51,8 +51,12 @@ func main() {
 	})
 
 	router.POST("/callback", func(c *gin.Context) {
-		if err := handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run(); err != nil {
-			log.Printf("CallbackHandler error: %#v", err)
+		h, err := handlers.NewCallbackHandler(c, conf, ur, gr, tr)
+		if err != nil {
+			log.Printf("NewCallbackHandler error: %#v", err)
+		}
+		if err := h.Run(); err != nil {
+			log.Printf("CallbackHandler.Run() error: %#v", err)
 		}
 	})
 
