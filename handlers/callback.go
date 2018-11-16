@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -12,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/totsukapoker/totsuka-ps-bot/config"
-	"github.com/totsukapoker/totsuka-ps-bot/models"
 	"github.com/totsukapoker/totsuka-ps-bot/repositories"
 
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -41,7 +39,7 @@ func NewCallbackHandler(c *gin.Context, conf *config.Config, ur *repositories.Us
 }
 
 // Run executes handler.
-func (h *CallbackHandler) Run() {
+func (h *CallbackHandler) Run() error {
 	proxyURL, _ := url.Parse(h.conf.ProxyURL)
 	client := &http.Client{
 		Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
@@ -50,55 +48,46 @@ func (h *CallbackHandler) Run() {
 		h.conf.LineChannelSecret, h.conf.LineChannelAccessToken, linebot.WithHTTPClient(client),
 	)
 	if err != nil {
-		fmt.Println("ERROR linebot.New:", err)
 		h.c.AbortWithStatus(500)
-		return
+		return err
 	}
 
 	events, err := bot.ParseRequest(h.c.Request)
 	if err != nil {
-		fmt.Println("ERROR ParseRequest:", err)
 		if err == linebot.ErrInvalidSignature {
 			h.c.AbortWithStatus(400)
 		} else {
 			h.c.AbortWithStatus(500)
 		}
-		return
+		return err
 	}
 
 	for _, event := range events {
 		// User loading
-		user := models.User{}
-		if event.Source.UserID != "" {
-			profile, err := bot.GetProfile(event.Source.UserID).Do()
-			if err != nil {
-				fmt.Println("ERROR GetProfile:", err, "UserID:", event.Source.UserID)
-				h.c.AbortWithStatus(400)
-				return
-			}
-			user = h.ur.FirstOrCreate(event.Source.UserID, profile.DisplayName, profile.PictureURL, profile.StatusMessage)
-		}
-
-		if user.ID == 0 {
-			fmt.Println("ERROR User is not specified, event.Source.UserID:", event.Source.UserID)
+		if event.Source.UserID == "" {
 			h.c.AbortWithStatus(400)
-			return
+			return nil
 		}
+		profile, err := bot.GetProfile(event.Source.UserID).Do()
+		if err != nil {
+			h.c.AbortWithStatus(400)
+			return err
+		}
+		user := h.ur.FirstOrCreate(event.Source.UserID, profile.DisplayName, profile.PictureURL, profile.StatusMessage)
 
 		// Game loading
 		game := h.gr.Current()
 		if game.ID == 0 {
-			fmt.Println("ERROR Game is not exist")
 			if _, err = bot.ReplyMessage(
 				event.ReplyToken,
 				linebot.NewTextMessage(
 					"今お前と遊んでいる暇はない。",
 				),
 			).Do(); err != nil {
-				fmt.Println("ERROR Game-is-not-exist ReplyMessage:", err)
 				h.c.AbortWithStatus(500)
+				return err
 			}
-			return
+			return nil
 		}
 
 		// Support types: EventTypeMessage, EventTypeFollow, EventTypeUnfollow, EventTypePostback
@@ -162,9 +151,8 @@ func (h *CallbackHandler) Run() {
 			}
 			if replyMessage != "" {
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMessage)).Do(); err != nil {
-					fmt.Println("ERROR TypeMessage(Text) ReplyMessage:", err)
 					h.c.AbortWithStatus(500)
-					return
+					return err
 				}
 			}
 		case linebot.EventTypeFollow:
@@ -174,9 +162,8 @@ func (h *CallbackHandler) Run() {
 					"『怪物と闘う者は、その過程で自らが怪物と化さぬよう心せよ。"+user.DisplayName+"が長く深淵を覗くならば、深淵もまた等しく"+user.DisplayName+"を見返すのだ』",
 				),
 			).Do(); err != nil {
-				fmt.Println("ERROR TypeFollow ReplyMessage:", err)
 				h.c.AbortWithStatus(500)
-				return
+				return err
 			}
 		case linebot.EventTypeUnfollow:
 			// do something
@@ -184,6 +171,7 @@ func (h *CallbackHandler) Run() {
 			// do something
 		}
 	}
+	return nil
 }
 
 func (h *CallbackHandler) checkRegexp(reg, str string) bool {

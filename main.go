@@ -51,7 +51,9 @@ func main() {
 	})
 
 	router.POST("/callback", func(c *gin.Context) {
-		handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run()
+		if err := handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run(); err != nil {
+			log.Printf("CallbackHandler error: %#v", err)
+		}
 	})
 
 	router.GET("/result/:id", func(c *gin.Context) {
