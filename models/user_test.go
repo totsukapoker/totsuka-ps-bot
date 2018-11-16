@@ -4,16 +4,21 @@ import (
 	"testing"
 )
 
-func TestUserName(t *testing.T) {
-	var u User
-
-	u = User{MyName: "", DisplayName: "DisplayName1"}
-	if u.Name() != "DisplayName1" {
-		t.Fatalf("WRONG: Name, current: \"%v\"", u.Name())
+func TestUser_Name(t *testing.T) {
+	tests := []struct {
+		myName, displayName, want string
+	}{
+		{"", "", ""},
+		{"", "DisplayName1", "DisplayName1"},
+		{"MyName2", "", "MyName2"},
+		{"MyName3", "DisplayName3", "MyName3"},
 	}
-
-	u = User{MyName: "MyName2", DisplayName: "DisplayName2"}
-	if u.Name() != "MyName2" {
-		t.Fatalf("WRONG: Name, current: \"%v\"", u.Name())
+	for _, tt := range tests {
+		t.Run("", func(t *testing.T) {
+			u := &User{MyName: tt.myName, DisplayName: tt.displayName}
+			if u.Name() != tt.want {
+				t.Errorf("user.Name() = %#v; want: %#v", u.Name(), tt.want)
+			}
+		})
 	}
 }
