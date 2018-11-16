@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -63,6 +64,16 @@ func main() {
 	// GET: /result/:id
 	// ゲーム(id=game_id)の現在の状況及び結果を表示する
 	router.GET("/result/:id", func(c *gin.Context) {
+		// id が "current" の場合は現在行われているゲームがあればその結果へリダイレクトする
+		if c.Param("id") == "current" {
+			game := gr.Current()
+			if game.ID == 0 {
+				showErrorHTML(c, http.StatusNotFound, "No game is running now.")
+			}
+			c.Redirect(http.StatusMovedPermanently, "/result/"+fmt.Sprint(game.ID))
+			return
+		}
+
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			showErrorHTML(c, http.StatusInternalServerError, "strconv error")
