@@ -36,31 +36,32 @@ func NewResultHandler(c *gin.Context, conf *config.Config, ur *repositories.User
 }
 
 // Run executes handler.
-func (h *ResultHandler) Run() {
+func (h *ResultHandler) Run() error {
 	// id が "current" の場合は現在行われているゲームがあればその結果へリダイレクトする
 	if h.c.Param("id") == "current" {
 		game := h.gr.Current()
 		if game.ID == 0 {
 			h.showErrorHTML(http.StatusNotFound, "No game is running now.")
+			return nil
 		}
 		h.c.Redirect(http.StatusFound, "/result/"+fmt.Sprint(game.ID))
-		return
+		return nil
 	}
 
 	id, err := strconv.Atoi(h.c.Param("id"))
 	if err != nil {
 		h.showErrorHTML(http.StatusInternalServerError, "strconv error")
-		return
+		return err
 	}
 	if id <= 0 {
 		h.showErrorHTML(http.StatusBadRequest, "Need valid id")
-		return
+		return nil
 	}
 
 	game := h.gr.First(uint(id))
 	if game.ID == 0 {
 		h.showErrorHTML(http.StatusNotFound, "Not found")
-		return
+		return nil
 	}
 
 	transactions := h.tr.FindByGame(game)
@@ -161,6 +162,7 @@ L:
 		"totalstat":   totalstat,
 		"logs":        logs,
 	})
+	return nil
 }
 
 func (h *ResultHandler) showErrorHTML(code int, message string) {

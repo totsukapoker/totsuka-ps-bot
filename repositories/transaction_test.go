@@ -8,11 +8,11 @@ func TestNewTransactionRepository(t *testing.T) {
 	db, _, err := getDBMock()
 	defer db.Close()
 	if err != nil {
-		t.Fatalf("got unexpected error '%s'", err)
+		t.Fatalf("%#v", err)
 	}
-	r := NewGameRepository(db)
+	r := NewTransactionRepository(db)
 	if r.db != db {
-		t.Errorf("got: %v, expected: %v", r.db, db)
+		t.Errorf("TransactionRepository.db = %#v; want: %#v", r.db, db)
 	}
 }
 

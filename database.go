@@ -12,14 +12,14 @@ import (
 )
 
 // ConnectDB - Provide connection to database with gorm
-func ConnectDB(url string) (db *gorm.DB) {
+func ConnectDB(url string) *gorm.DB {
 	db, err := gorm.Open(connectionVars(url))
 	if err != nil {
 		log.Fatal("Failed to connect database")
 	}
 	db.LogMode(true)
 	db.DB().SetMaxIdleConns(0) // To avoid an error "Invalid Connection" on Heroku
-	return
+	return db
 }
 
 // MigrateDB - Do migration database with gorm.DB

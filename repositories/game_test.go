@@ -10,11 +10,10 @@ func TestNewGameRepository(t *testing.T) {
 	db, _, err := getDBMock()
 	defer db.Close()
 	if err != nil {
-		t.Fatalf("got unexpected error '%s'", err)
+		t.Fatalf("%#v", err)
 	}
-	r := NewGameRepository(db)
-	if r.db != db {
-		t.Errorf("got: %v, expected: %v", r.db, db)
+	if r := NewGameRepository(db); r.db != db {
+		t.Errorf("GameRepository.db = %#v; want: %#v", r.db, db)
 	}
 }
 
@@ -22,7 +21,7 @@ func TestGameRepository_First(t *testing.T) {
 	db, mock, err := getDBMock()
 	defer db.Close()
 	if err != nil {
-		t.Fatalf("got unexpected error '%s'", err)
+		t.Fatalf("%#v", err)
 	}
 	r := NewGameRepository(db)
 
@@ -33,7 +32,7 @@ func TestGameRepository_First(t *testing.T) {
 	r.First(89)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+		t.Errorf("there were unfulfilled expectations: %#v", err)
 	}
 }
 
@@ -41,7 +40,7 @@ func TestGameRepository_Current(t *testing.T) {
 	db, mock, err := getDBMock()
 	defer db.Close()
 	if err != nil {
-		t.Fatalf("got unexpected error '%s'", err)
+		t.Fatalf("%#v", err)
 	}
 	r := NewGameRepository(db)
 
@@ -52,6 +51,6 @@ func TestGameRepository_Current(t *testing.T) {
 	r.Current()
 
 	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+		t.Errorf("there were unfulfilled expectations: %#v", err)
 	}
 }

@@ -14,6 +14,5 @@ func getDBMock() (db *gorm.DB, mock sqlmock.Sqlmock, err error) {
 	if err != nil {
 		return
 	}
-	//db.LogMode(true)
 	return
 }

@@ -23,9 +23,9 @@ func main() {
 		log.Print("Error loading .env file. But you could be ignore me.")
 	}
 
-	conf, err := config.Load()
-	if err != nil {
-		log.Fatalf("Failed to load config: %+v", err)
+	conf := config.New()
+	if err := conf.Load(); err != nil {
+		log.Fatalf("Failed to load config: %#v", err)
 	}
 
 	// Prepare http router (gin)
@@ -51,11 +51,19 @@ func main() {
 	})
 
 	router.POST("/callback", func(c *gin.Context) {
-		handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run()
+		h, err := handlers.NewCallbackHandler(c, conf, ur, gr, tr)
+		if err != nil {
+			log.Printf("NewCallbackHandler error: %#v", err)
+		}
+		if err := h.Run(); err != nil {
+			log.Printf("CallbackHandler.Run() error: %#v", err)
+		}
 	})
 
 	router.GET("/result/:id", func(c *gin.Context) {
-		handlers.NewResultHandler(c, conf, ur, gr, tr).Run()
+		if err := handlers.NewResultHandler(c, conf, ur, gr, tr).Run(); err != nil {
+			log.Printf("ResultHandler error: %#v", err)
+		}
 	})
 
 	router.Run(":" + strconv.Itoa(conf.Port))
