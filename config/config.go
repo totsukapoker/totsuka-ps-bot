@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 )
@@ -15,92 +14,73 @@ type Config struct {
 	LineChannelAccessToken string
 }
 
-// Load config.Load() to load config values from .env and os.Getenv
-func Load() (*Config, error) {
-	// default values
-	config := &Config{
+// New returns config struct with default values.
+func New() *Config {
+	return &Config{
 		Port:  8000,
 		DbURL: "mysql://root:@localhost/totsuka_ps_bot",
 	}
-
-	err := loadAll(config)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
 }
 
-func loadAll(config *Config) error {
-	var err error
-	err = loadPort(config)
-	if err != nil {
+// Load is loading config values.
+func (c *Config) Load() error {
+	if err := c.loadPort(); err != nil {
 		return err
 	}
-	err = loadDbURL(config)
-	if err != nil {
+	if err := c.loadDbURL(); err != nil {
 		return err
 	}
-	err = loadProxyURL(config)
-	if err != nil {
+	if err := c.loadProxyURL(); err != nil {
 		return err
 	}
-	err = loadLineChannelSecret(config)
-	if err != nil {
+	if err := c.loadLineChannelSecret(); err != nil {
 		return err
 	}
-	err = loadLineChannelAccessToken(config)
-	if err != nil {
+	if err := c.loadLineChannelAccessToken(); err != nil {
 		return err
 	}
-	return err
+	return nil
 
 }
 
-func loadPort(config *Config) error {
+func (c *Config) loadPort() error {
 	port := os.Getenv("PORT")
 	if port != "" {
 		p, err := strconv.Atoi(os.Getenv("PORT"))
 		if err != nil {
-			return fmt.Errorf("Invalid PORT: %v", err)
+			return err
 		}
-		config.Port = p
+		c.Port = p
 	}
 	return nil
 }
 
-func loadDbURL(config *Config) error {
-	var dbURL string
+func (c *Config) loadDbURL() error {
 	if os.Getenv("DATABASE_URL") != "" {
-		dbURL = os.Getenv("DATABASE_URL")
-	} else if os.Getenv("CLEARDB_DATABASE_URL") != "" {
-		dbURL = os.Getenv("CLEARDB_DATABASE_URL")
+		c.DbURL = os.Getenv("DATABASE_URL")
 	}
-	if dbURL != "" {
-		config.DbURL = dbURL
+	if os.Getenv("CLEARDB_DATABASE_URL") != "" {
+		c.DbURL = os.Getenv("CLEARDB_DATABASE_URL")
 	}
 	return nil
 }
 
-func loadProxyURL(config *Config) error {
-	var proxyURL string
+func (c *Config) loadProxyURL() error {
 	if os.Getenv("PROXY_URL") != "" {
-		proxyURL = os.Getenv("PROXY_URL")
-	} else if os.Getenv("FIXIE_URL") != "" {
-		proxyURL = os.Getenv("FIXIE_URL")
+		c.ProxyURL = os.Getenv("PROXY_URL")
 	}
-	if proxyURL != "" {
-		config.ProxyURL = proxyURL
+	if os.Getenv("FIXIE_URL") != "" {
+		c.ProxyURL = os.Getenv("FIXIE_URL")
 	}
 	return nil
 }
 
-func loadLineChannelSecret(config *Config) error {
-	config.LineChannelSecret = os.Getenv("LINE_CHANNEL_SECRET")
+func (c *Config) loadLineChannelSecret() error {
+	c.LineChannelSecret = os.Getenv("LINE_CHANNEL_SECRET")
 	return nil
 }
 
-func loadLineChannelAccessToken(config *Config) error {
-	config.LineChannelAccessToken = os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
+func (c *Config) loadLineChannelAccessToken() error {
+	c.LineChannelAccessToken = os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
 	return nil
 }

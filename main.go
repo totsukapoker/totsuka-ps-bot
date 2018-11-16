@@ -23,9 +23,9 @@ func main() {
 		log.Print("Error loading .env file. But you could be ignore me.")
 	}
 
-	conf, err := config.Load()
-	if err != nil {
-		log.Fatalf("Failed to load config: %+v", err)
+	conf := config.New()
+	if err := conf.Load(); err != nil {
+		log.Fatalf("Failed to load config: %#v", err)
 	}
 
 	// Prepare http router (gin)
