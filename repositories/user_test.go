@@ -10,11 +10,11 @@ func TestNewUserRepository(t *testing.T) {
 	db, _, err := getDBMock()
 	defer db.Close()
 	if err != nil {
-		t.Fatalf("got unexpected error '%s'", err)
+		t.Fatalf("%#v", err)
 	}
 	r := NewUserRepository(db)
 	if r.db != db {
-		t.Errorf("got: %v, expected: %v", r.db, db)
+		t.Errorf("UserRepository.db = %#v; want: %#v", r.db, db)
 	}
 }
 
@@ -42,7 +42,7 @@ func TestUserRepository_FindByIDs(t *testing.T) {
 	r.FindByIDs([]uint{1, 2, 3})
 
 	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Errorf("there were unfulfilled expectations: %s", err)
+		t.Errorf("there were unfulfilled expectations: %#v", err)
 	}
 }
 
