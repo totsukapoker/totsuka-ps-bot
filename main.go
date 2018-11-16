@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/totsukapoker/totsuka-ps-bot/handlers"
 	"github.com/totsukapoker/totsuka-ps-bot/repositories"
 
 	"github.com/gin-gonic/gin"
@@ -58,7 +59,7 @@ func main() {
 
 	// POST: /callback
 	router.POST("/callback", func(c *gin.Context) {
-		callback(c, conf, ur, gr, tr)
+		handlers.NewCallbackHandler(c, conf, ur, gr, tr).Run()
 	})
 
 	// GET: /result/:id
