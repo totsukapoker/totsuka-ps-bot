@@ -66,6 +66,12 @@ func main() {
 		}
 	})
 
+	router.GET("/results/:id", func(c *gin.Context) {
+		if err := handlers.NewResultsHandler(c, conf, gr).Run(); err != nil {
+			log.Printf("ResultsHandler error: %#v", err)
+		}
+	})
+
 	api := router.Group("/api")
 	{
 		api.GET("/games/:id", func(c *gin.Context) {

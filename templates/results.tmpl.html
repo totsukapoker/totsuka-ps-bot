@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  {{template "header.tmpl.html"}}
+  <link rel="stylesheet" type="text/css" href="/static/results.css" />
+</head>
+<body>
+  <noscript>You need to activate to run JavaScript on your browser.</noscript>
+  <div class="container-fluid" id="app">
+    <h1>[[game.Name]]</h1>
+    <p class="lead text-secondary"><i class="fas fa-calendar-alt"></i>&nbsp;[[game.StartedAt]]〜[[game.EndedAt]]</p>
+    <table v-if="isAvailable" class="table table-striped table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th><i class="far fa-user-circle"></i>&nbsp;名前</th>
+          <th>現在額</th>
+          <th>バイイン</th>
+          <th>ROI</th>
+          <th>記録時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="result in results">
+          <td><img v-bind:src="result.User.PictureURL" width="30" height="30">[[result.User.Name]]</td>
+          <td class="text-right number-format">[[result.Amount.All]]</td>
+          <td class="text-right number-format">[[result.Amount.Buyin]]</td>
+          <td class="text-right roi-format">[[result.ROI]]</td>
+          <td>StartedAt〜UpdatedAt</td>
+        </tr>
+        <tr class="table-success"><!-- or table-danger text-danger -->
+          <td>&nbsp;</td>
+          <td class="text-right number-format">total.CurrentAmount</td>
+          <td class="text-right number-format">total.BuyinAmount</td>
+          <td colspan="2">
+            <i class="fas fa-thumbs-up"></i>&nbsp;OK！
+            <i class="fas fa-exclamation-triangle"></i>&nbsp;現在額orバイイン額が&nbsp;<strong class="number-format">total.DifferenceAbsAmount</strong>&nbsp;大きいです
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-black-50 text-center font-weight-light"><i class="far fa-clock"></i>&nbsp;[[fetchedAt]]</p>
+
+    <div class="table-responsive">
+      <table v-if="isAvailable" class="table table-dark table-borderless table-sm">
+        <thead>
+          <tr>
+            <th>名前</th>
+            <th>タイプ</th>
+            <th>金額</th>
+            <th>日時</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="transaction in transactions">
+            <td>[[transaction.User.Name]]</td>
+            <td>[[transaction.Type]]</td>
+            <td class="text-right number-format">[[transaction.Amount]]</td>
+            <td>[[transaction.CreatedAt]]</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="qrcode fixed-top">
+    <img src="/static/qrcode.png" width="120" height="120">
+  </div>
+  {{template "footer_js.tmpl.html"}}
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/static/results.js"></script>
+</body>
+</html>
