@@ -19,7 +19,7 @@ func NewGameRepository(db *gorm.DB) *GameRepository {
 
 // First returns game by id.
 func (g *GameRepository) First(id uint) (game models.Game) {
-	g.db.First(&game, id)
+	g.db.Preload("Transactions").Preload("Transactions.User").First(&game, id)
 	return
 }
 
