@@ -66,5 +66,17 @@ func main() {
 		}
 	})
 
+	api := router.Group("/api")
+	{
+		api.GET("/games/:id", func(c *gin.Context) {
+			id, err := strconv.Atoi(c.Param("id"))
+			if err != nil {
+				log.Fatalf("strconv error: %#v", err)
+			}
+			game := gr.First(uint(id))
+			c.JSON(http.StatusOK, game)
+		})
+	}
+
 	router.Run(":" + strconv.Itoa(conf.Port))
 }
