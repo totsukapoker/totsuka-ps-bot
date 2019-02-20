@@ -184,6 +184,7 @@ func (h *CallbackHandler) loadMessages() error {
 			"俺とじゃれるか？",
 			"お前は俺の玩具だ",
 			"俺の握力は600kgだ",
+			"花占い、する？",
 		},
 		BuyinDone:         "バイインの入力をしたぞ！",
 		CurrentAmountDone: "現在額の入力をしたぞ！",
