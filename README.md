@@ -11,24 +11,28 @@ https://totsuka-ps-bot.herokuapp.com/
 ## Require
 
 - Go
-- MySQL
+- MySQL 5.7
 
 ## Development
 
+### Docker Compose
+
 ```shell
-$ cd totsuka-ps-bot.git
-$ go build
-$ ./totsuka-ps-bot
+$ git clone git@github.com:totsukapoker/totsuka-ps-bot.git
+$ cd totsuka-ps-bot
+$ docker-compose up -d
 $ open http://localhost:8000
 ```
 
-直接 build して実行してください。MySQL が必要なのでローカルに起動して下さい。デフォルトで `root@localhost (パスワード無し)` に接続しにいきます。DB 名は `totsuka_ps_bot` です。
-DB 接続先の変更や起動ポートの変更など、環境変数の設定が必要な場合は [.env.sample](/.env.sample) を `.env` として設置し、変更ができます。
+- MySQL がポート `53306` に立ち上がります (`root` パスワード無し)
+  - 各種 GUI クライアント ([Sequel Pro](https://www.sequelpro.com/) など) から接続する際にどうぞ
+- MySQL に database `totsuka_ps_bot` が必要なので初回時には手動で作ってください
+  - `$ docker-compose exec mysql echo 'CREATE DATABASE totsuka_ps_bot;' | mysql`
 
 ## Production
 
 - `master` に push されたものが Heroku に自動デプロイされます。
-- [リリース](https://github.com/totsukapoker/totsuka-ps-bot/releases)は雰囲気でつけてるよ（雰囲気とは
+- [リリース](https://github.com/totsukapoker/totsuka-ps-bot/releases) は雰囲気でつけてるよ（雰囲気とは
 
 ## Misc
 

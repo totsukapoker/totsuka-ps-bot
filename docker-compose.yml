@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+    image: totsuka-ps-bot:1.0.0
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: 'mysql://root:@mysql/totsuka_ps_bot'
+    tmpfs:
+      - /tmp
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    ports:
+      - 53306:3306
+    healthcheck:
+      test: ['CMD', 'mysqladmin' ,'ping', '-h', 'localhost']
+      timeout: 10s
+      interval: 30s
+      start_period: 30s
+
+volumes:
+  mysql-data:
